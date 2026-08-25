@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auralist Music - YouTube Music Experience</title>
+  <meta name="description" content="Auralist Music - Stream 2,000+ full-length original Indian & Hollywood songs with real-time lyrics, Up Next recommendations, and high quality 320kbps audio.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Top Header Bar -->
+    <header class="top-header">
+      <div class="header-left">
+        <button id="toggleSidebarBtn" class="menu-toggle-btn" title="Toggle Navigation">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="ytm-brand">
+          <i class="fa-solid fa-circle-play"></i>
+          <span>Auralist Music</span>
+        </div>
+      </div>
+
+      <div class="header-center">
+        <div class="search-bar">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="globalSearchInput" class="search-input" placeholder="Search songs, artists, albums, podcasts...">
+        </div>
+      </div>
+
+      <div class="header-right">
+        <button id="createPlaylistNavBtn" class="control-btn" title="Create Playlist">
+          <i class="fa-solid fa-plus"></i>
+        </button>
+        <div class="user-avatar" id="userAvatar" title="Account Options">U</div>
+        <button id="logoutBtn" class="control-btn" title="Log Out">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Sidebar Drawer -->
+    <aside class="sidebar" id="appSidebar">
+      <nav class="nav-section">
+        <a href="#home" class="nav-item active" data-view="home">
+          <i class="fa-solid fa-house"></i>
+          <span>Home</span>
+        </a>
+        <a href="#explore" class="nav-item" data-view="explore">
+          <i class="fa-solid fa-compass"></i>
+          <span>Explore</span>
+        </a>
+        <a href="#library" class="nav-item" data-view="library">
+          <i class="fa-solid fa-lines-leaning"></i>
+          <span>Library</span>
+        </a>
+        <a href="#catalog" class="nav-item" data-view="catalog">
+          <i class="fa-solid fa-compact-disc"></i>
+          <span>2000+ Catalog</span>
+        </a>
+      </nav>
+
+      <div class="nav-section" style="border-top:1px solid var(--border-color); padding-top:12px;">
+        <div class="nav-section-title">My Collection</div>
+        <a href="#liked" class="nav-item" data-view="liked">
+          <i class="fa-solid fa-thumbs-up"></i>
+          <span>Liked Songs</span>
+        </a>
+        <a href="#history" class="nav-item" data-view="history">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          <span>History</span>
+        </a>
+      </div>
+
+      <div class="nav-section" style="flex: 1; border-top:1px solid var(--border-color); padding-top:12px;">
+        <div class="playlist-nav-header">
+          <span class="nav-section-title" style="padding:0;">Playlists</span>
+        </div>
+        <div id="playlistNavList" class="nav-section" style="margin-top:8px;">
+          <!-- Playlist links rendered here -->
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- YouTube Music Filter Pills Bar with Singer Search & Scroll Bar -->
+      <div class="filter-pills-wrapper">
+        <button id="scrollPillsLeft" class="pill-scroll-arrow left" title="Scroll Left">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+
+        <div class="filter-pills-bar" id="genrePills">
+          <!-- Singer Quick Search Input Pill -->
+          <div class="singer-search-pill" title="Type any singer name to search songs">
+            <i class="fa-solid fa-microphone" style="color:var(--accent-yt-red);"></i>
+            <input type="text" id="singerBarInput" placeholder="Filter by singer name..." autocomplete="off">
+          </div>
+
+          <button class="filter-pill active" data-genre="all">All</button>
+          
+          <!-- Top Singer Pills -->
+          <button class="filter-pill singer-pill" data-genre="nusrat"><span class="pill-icon">👑</span> Nusrat Fateh Ali Khan</button>
+          <button class="filter-pill singer-pill" data-genre="arijit"><span class="pill-icon">🎤</span> Arijit Singh</button>
+          <button class="filter-pill singer-pill" data-genre="arrahman"><span class="pill-icon">🎵</span> A.R. Rahman</button>
+          <button class="filter-pill singer-pill" data-genre="kishore"><span class="pill-icon">🎶</span> Kishore Kumar</button>
+          <button class="filter-pill singer-pill" data-genre="lata"><span class="pill-icon">🌟</span> Lata Mangeshkar</button>
+          <button class="filter-pill singer-pill" data-genre="atif"><span class="pill-icon">👑</span> Atif Aslam</button>
+          <button class="filter-pill singer-pill" data-genre="diljit"><span class="pill-icon">🎙️</span> Diljit Dosanjh</button>
+          <button class="filter-pill singer-pill" data-genre="karan"><span class="pill-icon">🔥</span> Karan Aujla</button>
+          <button class="filter-pill singer-pill" data-genre="shreya"><span class="pill-icon">💖</span> Shreya Ghoshal</button>
+          <button class="filter-pill singer-pill" data-genre="sonu"><span class="pill-icon">🎼</span> Sonu Nigam</button>
+          <button class="filter-pill singer-pill" data-genre="jubin"><span class="pill-icon">🎶</span> Jubin Nautiyal</button>
+          <button class="filter-pill singer-pill" data-genre="darshan"><span class="pill-icon">🌟</span> Darshan Raval</button>
+          <button class="filter-pill singer-pill" data-genre="taylor"><span class="pill-icon">🎧</span> Taylor Swift</button>
+          <button class="filter-pill singer-pill" data-genre="edsheeran"><span class="pill-icon">🎸</span> Ed Sheeran</button>
+          <button class="filter-pill singer-pill" data-genre="weeknd"><span class="pill-icon">🌙</span> The Weeknd</button>
+          <button class="filter-pill singer-pill" data-genre="drake"><span class="pill-icon">🎹</span> Drake</button>
+
+          <!-- Category Pills -->
+          <button class="filter-pill" data-genre="bollywood">🎬 Bollywood</button>
+          <button class="filter-pill" data-genre="hollywood">🌟 Hollywood Pop</button>
+          <button class="filter-pill" data-genre="punjabi">🔥 Punjabi Beats</button>
+          <button class="filter-pill" data-genre="romantic">💖 Hindi Romantic</button>
+          <button class="filter-pill" data-genre="south">🎸 South Hits</button>
+          <button class="filter-pill" data-genre="hiphop">🎹 Desi Hip Hop</button>
+          <button class="filter-pill" data-genre="lofi">🌙 Lo-Fi Vibes</button>
+          <button class="filter-pill" data-genre="workout">⚡ Workout</button>
+          <button class="filter-pill" data-genre="focus">🧘 Focus</button>
+          <button class="filter-pill" data-genre="relax">🎧 Chill & Relax</button>
+        </div>
+
+        <button id="scrollPillsRight" class="pill-scroll-arrow right" title="Scroll Right">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+
+      <!-- Dynamic View Container -->
+      <div id="mainView" class="view-container">
+        <!-- View content dynamically rendered here -->
+      </div>
+
+    </main>
+
+    <!-- Persistent Bottom YouTube Music Player Bar -->
+    <div class="player-bar">
+      
+      <!-- Left: Track Info & Reactions -->
+      <div class="now-playing">
+        <img id="playerCover" class="now-playing-cover" src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=200&auto=format&fit=crop" alt="Cover" onclick="app.toggleFullscreenPlayer()">
+        <div class="now-playing-info">
+          <span id="playerTitle" class="now-playing-title" onclick="app.toggleFullscreenPlayer()">No Track Selected</span>
+          <span id="playerArtist" class="now-playing-artist">Choose a track to stream</span>
+        </div>
+        <div class="player-reaction-btns">
+          <button id="playerDislikeBtn" class="reaction-btn" title="Dislike / Skip">
+            <i class="fa-regular fa-thumbs-down"></i>
+          </button>
+          <button id="playerLikeBtn" class="reaction-btn" title="Like Song">
+            <i class="fa-regular fa-thumbs-up"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Center: Playback Controls & Progress Bar -->
+      <div class="player-controls-center">
+        <div class="control-buttons">
+          <button id="shuffleBtn" class="control-btn" title="Shuffle">
+            <i class="fa-solid fa-shuffle"></i>
+          </button>
+          <button id="prevBtn" class="control-btn" title="Previous">
+            <i class="fa-solid fa-backward-step"></i>
+          </button>
+          <button id="playPauseBtn" class="play-pause-btn" title="Play">
+            <i class="fa-solid fa-play"></i>
+          </button>
+          <button id="nextBtn" class="control-btn" title="Next">
+            <i class="fa-solid fa-forward-step"></i>
+          </button>
+          <button id="repeatBtn" class="control-btn" title="Repeat (Off)">
+            <i class="fa-solid fa-repeat"></i>
+          </button>
+        </div>
+
+        <div class="progress-container">
+          <span id="currentTime" class="time-stamp">0:00</span>
+          <div class="progress-bar-wrapper">
+            <input type="range" id="seekBar" class="range-slider" min="0" max="100" value="0">
+          </div>
+          <span id="totalDuration" class="time-stamp">0:00</span>
+        </div>
+      </div>
+
+      <!-- Right: Lyrics, Queue & Volume -->
+      <div class="player-controls-right">
+        <div id="equalizer" class="equalizer-icon paused" title="Audio Stream Playing">
+          <div class="equalizer-bar"></div>
+          <div class="equalizer-bar"></div>
+          <div class="equalizer-bar"></div>
+          <div class="equalizer-bar"></div>
+        </div>
+
+        <button id="lyricsToggleBtn" class="control-btn" title="Lyrics" onclick="app.openFullscreenPlayer('lyrics')">
+          <i class="fa-solid fa-align-left"></i>
+        </button>
+
+        <button id="queueToggleBtn" class="control-btn" title="Up Next Queue" onclick="app.openFullscreenPlayer('queue')">
+          <i class="fa-solid fa-list-ul"></i>
+        </button>
+
+        <div class="volume-container">
+          <button id="muteBtn" class="control-btn" title="Mute/Unmute">
+            <i class="fa-solid fa-volume-high"></i>
+          </button>
+          <input type="range" id="volumeBar" class="range-slider" min="0" max="1" step="0.01" value="0.8">
+        </div>
+
+        <button id="expandPlayerBtn" class="control-btn" title="Expand Player" onclick="app.toggleFullscreenPlayer()">
+          <i class="fa-solid fa-chevron-up"></i>
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- YouTube Music Fullscreen Expanded Player Drawer -->
+  <div id="fullscreenPlayerDrawer" class="fullscreen-player-drawer">
+    <div class="drawer-header">
+      <button class="control-btn" onclick="app.toggleFullscreenPlayer(false)" title="Close Player">
+        <i class="fa-solid fa-chevron-down"></i>
+      </button>
+      <div class="drawer-tabs">
+        <div class="drawer-tab active" data-tab="queue" onclick="app.switchDrawerTab('queue')">UP NEXT</div>
+        <div class="drawer-tab" data-tab="lyrics" onclick="app.switchDrawerTab('lyrics')">LYRICS</div>
+        <div class="drawer-tab" data-tab="related" onclick="app.switchDrawerTab('related')">RELATED</div>
+      </div>
+      <button class="control-btn" onclick="app.toggleFullscreenPlayer(false)"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="drawer-body">
+      <!-- Left: Giant Cover & Track Info -->
+      <div class="drawer-cover-box">
+        <img id="drawerCover" class="drawer-cover-img" src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&auto=format&fit=crop" alt="Cover">
+        <div class="drawer-track-meta">
+          <h2 id="drawerTitle" class="drawer-track-title">No Track Selected</h2>
+          <p id="drawerArtist" class="drawer-track-artist">Choose a track to stream</p>
+        </div>
+      </div>
+
+      <!-- Right: Up Next Queue or Synchronized Lyrics -->
+      <div class="drawer-content-box">
+        <div id="drawerTabContentQueue">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <span style="font-weight:700; font-size:16px;">Playing From Playlist</span>
+            <button class="btn-primary" style="width:auto; padding:6px 14px; font-size:12px;" onclick="player.clearQueue()">Clear Queue</button>
+          </div>
+          <div id="drawerQueueList" class="track-list">
+            <!-- Up next queue items -->
+          </div>
+        </div>
+
+        <div id="drawerTabContentLyrics" style="display:none;">
+          <h3 style="font-size:18px; font-weight:700; margin-bottom:16px; color:var(--accent-yt-red);"><i class="fa-solid fa-align-left"></i> Real-Time Lyrics</h3>
+          <div id="lyricsContent" class="lyrics-text">Loading lyrics...</div>
+        </div>
+
+        <div id="drawerTabContentRelated" style="display:none;">
+          <h3 style="font-size:18px; font-weight:700; margin-bottom:16px;">Similar Tracks & Artists</h3>
+          <div id="relatedTracksList" class="track-list">
+            <!-- Related tracks list -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Playlist Modal -->
+  <div id="createPlaylistModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 style="font-size: 18px; font-weight: 700;">Create Playlist</h3>
+        <button class="control-btn closeModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="createPlaylistForm">
+        <div class="form-group">
+          <label for="playlistNameInput">Playlist Name</label>
+          <input type="text" id="playlistNameInput" class="form-control" style="padding-left:14px;" placeholder="e.g. My Favorites" required>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:24px;">
+          <button type="button" class="control-btn closeModalBtn" style="width:auto; padding:8px 16px;">Cancel</button>
+          <button type="submit" class="btn-primary" style="width:auto;">Create</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add to Playlist Selector Modal -->
+  <div id="addToPlaylistModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 style="font-size: 18px; font-weight: 700;">Add to Playlist</h3>
+        <button class="control-btn closeModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div id="playlistSelectList" style="display:flex; flex-direction:column; gap:8px; max-height:300px; overflow-y:auto; margin-bottom:20px;">
+        <!-- Playlist options loaded here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden HTML5 Audio Element -->
+  <audio id="audioEngine" preload="metadata"></audio>
+
+  <!-- Notification Toast Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Application Modules -->
+  <script src="/js/api.js"></script>
+  <script src="/js/player.js"></script>
+  <script src="/js/ui.js"></script>
+  <script src="/js/app.js"></script>
+
+</body>
+</html>

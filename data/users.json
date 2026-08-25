@@ -1,0 +1,51 @@
+[
+  {
+    "id": "msvw4epnbzzcp8t",
+    "name": "Alex Morgan",
+    "email": "alex@auralist.com",
+    "password": "$2a$10$KmatYgKlDOuCAfoMuLj0OuCF4H3y1pimJvqrcABEac20QCiTWs7T6",
+    "createdAt": "2026-08-16T14:18:40.379Z"
+  },
+  {
+    "id": "msvwcpluy7gqxe7",
+    "name": "ashish",
+    "email": "ashish@gmail.com",
+    "password": "$2a$10$vVzAyO2TCqQzIz.kCa.JH.8kLpoqiai/0XMHQHfrk69FFXNnNc6z2",
+    "createdAt": "2026-08-16T14:25:07.746Z"
+  },
+  {
+    "id": "msvwijcu2kwp84z",
+    "name": "Auralist Fan",
+    "email": "fan@auralist.com",
+    "password": "$2a$10$QuvZfZIfJL3J08lCqU.WRODX8fAGHIWBFz.jBBCn.9UcV/igBzlMC",
+    "createdAt": "2026-08-16T14:29:39.582Z"
+  },
+  {
+    "id": "msvwzhxj3pevp1b",
+    "name": "Full Song Listener",
+    "email": "listener@auralist.com",
+    "password": "$2a$10$4Fcj4oo/93jJQGjBBmmF9unQ3x6.isgTu3pUjt0QB5XJOCvW86egG",
+    "createdAt": "2026-08-16T14:42:50.887Z"
+  },
+  {
+    "id": "msvyp1yan060ce6",
+    "name": "Vocal Listener",
+    "email": "vocals@auralist.com",
+    "password": "$2a$10$nC8K5E7rJWAln25NM4Y/f.69Pf8M4zBitnxTy2UVrzv.Kk/h7aLkq",
+    "createdAt": "2026-08-16T15:30:42.850Z"
+  },
+  {
+    "id": "msvzcaxzelzvtl3",
+    "name": "Jamendo Listener",
+    "email": "jamendo@auralist.com",
+    "password": "$2a$10$XA8AY8IK/Ld5SIWmXTH3U.Z6W/oqjqzbJT5TQ/Vd5GlCZcdAMdQOm",
+    "createdAt": "2026-08-16T15:48:47.591Z"
+  },
+  {
+    "id": "msx1ikgl46opru1",
+    "name": "Demo User",
+    "email": "demo@example.com",
+    "password": "$2a$10$JjiVpaWPtYajjGxcdBmICuzVjJHVZ9Htwee0jeg3tZiN8puLzgJz.",
+    "createdAt": "2026-08-17T09:37:25.269Z"
+  }
+]

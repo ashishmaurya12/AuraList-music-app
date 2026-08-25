@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auralist - Create Account</title>
+  <meta name="description" content="Create an account on Auralist to discover music, organize playlists, and enjoy royalty-free audio playback.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-logo">
+          <i class="fa-solid fa-compact-disc"></i>
+          <span>Auralist</span>
+        </div>
+        <p class="auth-subtitle">Create your free music account</p>
+      </div>
+
+      <div id="alertBox" class="alert-box alert-error"></div>
+
+      <form id="registerForm">
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-user"></i>
+            <input type="text" id="name" class="form-control" placeholder="Alex Morgan" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-envelope"></i>
+            <input type="email" id="email" class="form-control" placeholder="name@example.com" required autocomplete="email">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" id="password" class="form-control" placeholder="Minimum 6 characters" required autocomplete="new-password">
+          </div>
+        </div>
+
+        <button type="submit" id="registerBtn" class="btn-primary">
+          <span>Create Account</span>
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        Already have an account? <a href="/login">Log in</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script>
+    if (API.getToken()) {
+      window.location.href = '/app';
+    }
+
+    const registerForm = document.getElementById('registerForm');
+    const alertBox = document.getElementById('alertBox');
+    const registerBtn = document.getElementById('registerBtn');
+
+    function showError(msg) {
+      alertBox.textContent = msg;
+      alertBox.style.display = 'block';
+    }
+
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      alertBox.style.display = 'none';
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      if (!name || !email || !password) {
+        showError('Please fill in all fields.');
+        return;
+      }
+
+      if (password.length < 6) {
+        showError('Password must be at least 6 characters long.');
+        return;
+      }
+
+      registerBtn.disabled = true;
+      registerBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Creating account...';
+
+      try {
+        const res = await API.post('/auth/register', { name, email, password });
+        if (res.token) {
+          API.setToken(res.token);
+          API.setUser(res.user);
+          window.location.href = '/app';
+        } else {
+          showError(res.error || 'Registration failed. Please try again.');
+        }
+      } catch (err) {
+        showError(err.message || 'Network error occurred.');
+      } finally {
+        registerBtn.disabled = false;
+        registerBtn.innerHTML = '<span>Create Account</span>';
+      }
+    });
+  </script>
+</body>
+</html>
