@@ -1,4 +1,4 @@
-# 🎵 AuraList — Music Streaming & Discovery Platform
+# 🎵 AuraList — Music Streaming Platform
 
 A responsive music streaming web application built with a Node.js/Express backend, MongoDB database, and a vanilla JavaScript single-page application (SPA) frontend. AuraList features a catalog of 3,000+ songs, multi-provider music streaming, an algorithmic relevance search engine, studio DSP audio enhancement, and privacy-focused user telemetry.
 
