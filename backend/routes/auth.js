@@ -1,124 +1,219 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { v4: uuidv4 } = require('crypto'); // or custom generator
-const { readData, writeData } = require('../services/db');
+const mongoose = require('mongoose');
+const rateLimit = require('express-rate-limit');
+
+const User = require('../models/User');
 const authMiddleware = require('../middleware/auth');
+const validate = require('../middleware/validate');
+const { registerSchema, loginSchema, updateProfileSchema, updatePasswordSchema } = require('../validators/auth');
+const { getJwtSecret } = require('../config/env');
 
 const router = express.Router();
 
-function generateId() {
-  return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
+function setAuthCookie(res, token) {
+  const isProd = process.env.NODE_ENV === 'production';
+  res.cookie('auralist_token', token, {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+  });
 }
 
+// Configure rate limiter specifically for authentication endpoints (20 attempts per 15 minutes)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // 20 attempts per 15 minutes per IP
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: () => process.env.NODE_ENV === 'test',
+  message: { error: 'Too many authentication attempts. Please try again after 15 minutes.' }
+});
+
 // POST /api/auth/register
-router.post('/register', async (req, res) => {
+router.post('/register', authLimiter, validate(registerSchema, 'body'), async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
 
-    if (!name || !email || !password) {
-      return res.status(400).json({ error: 'Please provide name, email, and password.' });
-    }
-
     const cleanEmail = email.toLowerCase().trim();
-    const users = await readData('users');
 
     // Check if user exists
-    const existing = users.find(u => u.email === cleanEmail);
+    const existing = await User.findOne({ email: cleanEmail });
     if (existing) {
       return res.status(400).json({ error: 'An account with this email already exists.' });
     }
 
-    // Hash password
+    // Hash password (bcrypt work factor 10)
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const newUser = {
-      id: generateId(),
+    const newUser = await User.create({
       name: name.trim(),
       email: cleanEmail,
-      password: hashedPassword,
-      createdAt: new Date().toISOString()
-    };
+      password: hashedPassword
+    });
 
-    users.push(newUser);
-    await writeData('users', users);
+    const userIdStr = newUser._id.toString();
 
-    // Create JWT
-    const secret = process.env.JWT_SECRET || 'auralist_jwt_super_secret_key_2026_safe';
+    // Create JWT using strictly validated JWT_SECRET
+    const secret = getJwtSecret();
     const token = jwt.sign(
-      { id: newUser.id, name: newUser.name, email: newUser.email },
+      { id: userIdStr, name: newUser.name, email: newUser.email },
       secret,
       { expiresIn: '7d' }
     );
+
+    setAuthCookie(res, token);
 
     res.status(201).json({
       message: 'Registration successful',
       token,
-      user: { id: newUser.id, name: newUser.name, email: newUser.email }
+      user: { id: userIdStr, name: newUser.name, email: newUser.email }
     });
   } catch (error) {
-    console.error('Registration error:', error);
-    res.status(500).json({ error: 'Server error during registration.' });
+    if (error.code === 11000) {
+      return res.status(400).json({ error: 'An account with this email already exists.' });
+    }
+    next(error);
   }
 });
 
 // POST /api/auth/login
-router.post('/login', async (req, res) => {
+router.post('/login', authLimiter, validate(loginSchema, 'body'), async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Please provide email and password.' });
-    }
-
     const cleanEmail = email.toLowerCase().trim();
-    const users = await readData('users');
 
-    const user = users.find(u => u.email === cleanEmail);
+    const user = await User.findOne({ email: cleanEmail });
     if (!user) {
-      return res.status(400).json({ error: 'Invalid email or password.' });
+      return res.status(401).json({ error: 'Invalid email or password.' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ error: 'Invalid email or password.' });
+      return res.status(401).json({ error: 'Invalid email or password.' });
     }
 
-    // Create JWT
-    const secret = process.env.JWT_SECRET || 'auralist_jwt_super_secret_key_2026_safe';
+    const userIdStr = user._id.toString();
+
+    // Create JWT using strictly validated JWT_SECRET
+    const secret = getJwtSecret();
     const token = jwt.sign(
-      { id: user.id, name: user.name, email: user.email },
+      { id: userIdStr, name: user.name, email: user.email },
       secret,
       { expiresIn: '7d' }
     );
 
+    setAuthCookie(res, token);
+
     res.json({
       message: 'Login successful',
       token,
-      user: { id: user.id, name: user.name, email: user.email }
+      user: { id: userIdStr, name: user.name, email: user.email }
     });
   } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ error: 'Server error during login.' });
+    next(error);
   }
 });
 
 // GET /api/auth/me
-router.get('/me', authMiddleware, async (req, res) => {
+router.get('/me', authMiddleware, async (req, res, next) => {
   try {
-    const users = await readData('users');
-    const user = users.find(u => u.id === req.user.id);
+    if (!mongoose.Types.ObjectId.isValid(req.user.id)) {
+      return res.status(400).json({ error: 'Invalid resource ID.' });
+    }
+
+    const user = await User.findById(req.user.id).select('-password');
     if (!user) {
       return res.status(404).json({ error: 'User not found.' });
     }
 
     res.json({
-      user: { id: user.id, name: user.name, email: user.email }
+      user: { id: user._id.toString(), name: user.name, email: user.email }
     });
   } catch (error) {
-    res.status(500).json({ error: 'Server error fetching profile.' });
+    next(error);
   }
 });
 
+// PUT /api/auth/profile
+router.put('/profile', authMiddleware, validate(updateProfileSchema, 'body'), async (req, res, next) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.user.id)) {
+      return res.status(400).json({ error: 'Invalid resource ID.' });
+    }
+
+    const { name } = req.body;
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    user.name = name.trim();
+    await user.save();
+
+    const userIdStr = user._id.toString();
+    const secret = getJwtSecret();
+    const token = jwt.sign(
+      { id: userIdStr, name: user.name, email: user.email },
+      secret,
+      { expiresIn: '7d' }
+    );
+
+    setAuthCookie(res, token);
+
+    res.json({
+      message: 'Profile updated successfully',
+      token,
+      user: { id: userIdStr, name: user.name, email: user.email }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// PUT /api/auth/password
+router.put('/password', authMiddleware, validate(updatePasswordSchema, 'body'), async (req, res, next) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.user.id)) {
+      return res.status(400).json({ error: 'Invalid resource ID.' });
+    }
+
+    const { currentPassword, newPassword } = req.body;
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ error: 'Current password is incorrect.' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+    await user.save();
+
+    res.json({
+      message: 'Password updated successfully'
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// POST /api/auth/logout
+router.post('/logout', (req, res) => {
+  res.clearCookie('auralist_token', {
+    httpOnly: true,
+    path: '/'
+  });
+  res.json({ success: true, message: 'Logged out successfully.' });
+});
+
 module.exports = router;
+

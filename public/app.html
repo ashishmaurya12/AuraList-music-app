@@ -3,168 +3,288 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Auralist Music - YouTube Music Experience</title>
-  <meta name="description" content="Auralist Music - Stream 2,000+ full-length original Indian & Hollywood songs with real-time lyrics, Up Next recommendations, and high quality 320kbps audio.">
+  <title>Auralist — Music Discovery & Streaming</title>
+  <meta name="description" content="Auralist — Stream high-fidelity music, explore curated catalogs, create custom playlists, and enjoy synchronized lyrics.">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 
-  <div class="app-container">
+  <!-- Atmospheric Midnight Echoes Studio Ambient Background (Blurred Cinematic Aesthetic) -->
+  <div class="ambient-background" id="ambientBackground" aria-hidden="true">
+    <img class="ambient-room-img" src="/images/midnight-echoes-bg.jpg" alt="" loading="eager">
+    <div class="ambient-room-overlay"></div>
+  </div>
+
+  <div class="app-container" id="appContainer">
     
-    <!-- Top Header Bar -->
-    <header class="top-header">
-      <div class="header-left">
-        <button id="toggleSidebarBtn" class="menu-toggle-btn" title="Toggle Navigation">
-          <i class="fa-solid fa-bars"></i>
-        </button>
-        <div class="ytm-brand">
-          <i class="fa-solid fa-circle-play"></i>
-          <span>Auralist Music</span>
-        </div>
-      </div>
-
-      <div class="header-center">
-        <div class="search-bar">
-          <i class="fa-solid fa-magnifying-glass"></i>
-          <input type="text" id="globalSearchInput" class="search-input" placeholder="Search songs, artists, albums, podcasts...">
-        </div>
-      </div>
-
-      <div class="header-right">
-        <button id="createPlaylistNavBtn" class="control-btn" title="Create Playlist">
-          <i class="fa-solid fa-plus"></i>
-        </button>
-        <div class="user-avatar" id="userAvatar" title="Account Options">U</div>
-        <button id="logoutBtn" class="control-btn" title="Log Out">
-          <i class="fa-solid fa-right-from-bracket"></i>
-        </button>
-      </div>
-    </header>
-
-    <!-- Sidebar Drawer -->
+    <!-- Sidebar Left Panels (Dual Floating Glass Cards) -->
     <aside class="sidebar" id="appSidebar">
-      <nav class="nav-section">
-        <a href="#home" class="nav-item active" data-view="home">
-          <i class="fa-solid fa-house"></i>
-          <span>Home</span>
-        </a>
-        <a href="#explore" class="nav-item" data-view="explore">
-          <i class="fa-solid fa-compass"></i>
-          <span>Explore</span>
-        </a>
-        <a href="#library" class="nav-item" data-view="library">
-          <i class="fa-solid fa-lines-leaning"></i>
-          <span>Library</span>
-        </a>
-        <a href="#catalog" class="nav-item" data-view="catalog">
-          <i class="fa-solid fa-compact-disc"></i>
-          <span>2000+ Catalog</span>
-        </a>
-      </nav>
-
-      <div class="nav-section" style="border-top:1px solid var(--border-color); padding-top:12px;">
-        <div class="nav-section-title">My Collection</div>
-        <a href="#liked" class="nav-item" data-view="liked">
-          <i class="fa-solid fa-thumbs-up"></i>
-          <span>Liked Songs</span>
-        </a>
-        <a href="#history" class="nav-item" data-view="history">
-          <i class="fa-solid fa-clock-rotate-left"></i>
-          <span>History</span>
-        </a>
+      <!-- Card 1: Core Navigation Pill Card -->
+      <div class="sidebar-glass-card sidebar-nav-card">
+        <nav class="nav-section">
+          <a href="#home" class="nav-item active" data-view="home">
+            <i class="fa-solid fa-house"></i>
+            <span>Home</span>
+          </a>
+          <a href="#search" class="nav-item" data-view="search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <span>Search</span>
+          </a>
+          <a href="#explore" class="nav-item" data-view="explore">
+            <i class="fa-solid fa-compass"></i>
+            <span>Explore</span>
+          </a>
+        </nav>
       </div>
 
-      <div class="nav-section" style="flex: 1; border-top:1px solid var(--border-color); padding-top:12px;">
-        <div class="playlist-nav-header">
-          <span class="nav-section-title" style="padding:0;">Playlists</span>
+      <!-- Card 2: Your Library Floating Card -->
+      <div class="sidebar-glass-card sidebar-library-card">
+        <div class="library-card-header">
+          <div class="library-card-title">
+            <i class="fa-solid fa-lines-leaning"></i>
+            <span>Your Library</span>
+          </div>
+          <button type="button" class="library-search-icon-btn" id="libraryFilterBtn" title="Search Library" aria-label="Search Library">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
         </div>
-        <div id="playlistNavList" class="nav-section" style="margin-top:8px;">
-          <!-- Playlist links rendered here -->
+
+        <!-- Library Filter Tags Row -->
+        <div class="library-filter-tags">
+          <button type="button" class="lib-tag-pill active" data-lib-filter="playlists">Playlists</button>
+          <button type="button" class="lib-tag-pill" data-lib-filter="albums">Albums</button>
+        </div>
+
+        <!-- Library Item 1: Favourite Songs Signature Card -->
+        <a href="#liked" class="library-item-row library-liked-row" data-view="liked">
+          <div class="library-liked-icon">
+            <i class="fa-solid fa-heart"></i>
+          </div>
+          <div class="library-item-meta">
+            <span class="library-item-name">Favourite Songs</span>
+            <span class="library-item-sub"><i class="fa-solid fa-thumbtack pin-icon"></i> Playlist &bull; <span id="likedCountBadge">0</span> songs</span>
+          </div>
+        </a>
+
+        <!-- Library Navigation Links -->
+        <nav class="nav-section nav-section-divider">
+          <a href="#catalog" class="nav-item" data-view="catalog">
+            <i class="fa-solid fa-compact-disc"></i>
+            <span>All Songs</span>
+          </a>
+          <a href="#radio" class="nav-item" data-view="radio">
+            <i class="fa-solid fa-radio"></i>
+            <span>Live Radio</span>
+          </a>
+          <a href="#insights" class="nav-item" data-view="insights">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Listening Insights</span>
+          </a>
+        </nav>
+
+        <!-- User Created Playlists -->
+        <div class="nav-section nav-section-playlists">
+          <div class="playlist-nav-header">
+            <span class="nav-section-title">Playlists</span>
+          </div>
+          <div id="playlistNavList" class="playlist-nav-list">
+            <!-- Playlist links rendered here dynamically -->
+          </div>
+        </div>
+
+        <!-- Card Bottom Button: + New Playlist -->
+        <button type="button" class="btn-new-playlist-pill" id="sidebarNewPlaylistBtn">
+          <i class="fa-solid fa-plus"></i>
+          <span>New playlist</span>
+        </button>
+      </div>
+    </aside>
+    <div id="sidebarOverlay" class="sidebar-overlay" style="display:none;" aria-hidden="true"></div>
+
+    <!-- Main Content Area (Central Floating Glass Panel) -->
+    <main class="main-content">
+      <div class="main-glass-panel">
+        
+        <!-- Center Top Header (Search, Filters, User Profile inside Center Card) -->
+        <header class="center-top-header" id="centerTopHeader">
+          <button id="toggleSidebarBtn" class="menu-toggle-btn mobile-only-btn" title="Toggle Navigation" aria-label="Toggle Navigation" aria-expanded="false" aria-controls="appSidebar">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+
+          <!-- History Back & Forward Navigation Arrows -->
+          <div class="header-nav-arrows">
+            <button type="button" class="header-nav-arrow-btn" id="navBackBtn" title="Go back (Alt+Left)" aria-label="Go back">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button type="button" class="header-nav-arrow-btn" id="navForwardBtn" title="Go forward (Alt+Right)" aria-label="Go forward">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+
+          <div class="center-search-wrapper" style="position:relative; flex:1;">
+            <div class="search-bar" id="globalSearchBar">
+              <div class="search-type-dropdown" id="searchTypeDropdown">
+                <button type="button" id="searchTypeBtn" class="search-type-btn" title="Search filter" aria-label="Search filter">
+                  <span id="searchTypeLabel">All</span>
+                  <i class="fa-solid fa-chevron-down search-dropdown-arrow"></i>
+                </button>
+                <div class="search-type-menu" id="searchTypeMenu" style="display:none;">
+                  <button type="button" class="search-type-option active" data-type="all">
+                    <i class="fa-solid fa-border-all"></i> All (Song, Artist, Album)
+                  </button>
+                  <button type="button" class="search-type-option" data-type="artist">
+                    <i class="fa-solid fa-user"></i> Artist Name
+                  </button>
+                  <button type="button" class="search-type-option" data-type="song">
+                    <i class="fa-solid fa-music"></i> Song Title
+                  </button>
+                </div>
+              </div>
+              <i class="fa-solid fa-magnifying-glass search-icon"></i>
+              <input type="text" id="globalSearchInput" class="search-input" placeholder="Search by artists, songs or albums" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="searchSuggestionsDropdown" aria-activedescendant="">
+              <span class="search-shortcut-hint" aria-hidden="true"><kbd>/</kbd></span>
+              <button type="button" id="clearSearchBtn" class="search-clear-btn" title="Clear search" aria-label="Clear search" style="display:none;">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+            <div id="searchSuggestionsDropdown" class="search-suggestions-dropdown" style="display:none;" role="listbox" aria-label="Search suggestions"></div>
+          </div>
+
+          <div class="center-header-actions">
+            <button id="headerWaveformBtn" class="control-btn header-audio-wave-btn" title="Audio Spectrum &amp; Equalizer" aria-label="Audio Spectrum &amp; Equalizer">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+                <path d="M4 12v.01M8 8v8M12 4v16M16 8v8M20 12v.01" />
+              </svg>
+            </button>
+            <button id="shortcutsHelpBtn" class="control-btn" title="Keyboard Shortcuts (?)" aria-label="Keyboard Shortcuts">
+              <i class="fa-solid fa-keyboard"></i>
+            </button>
+            <button id="createPlaylistNavBtn" class="control-btn" title="Create Playlist" aria-label="Create Playlist" style="display:none;">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+            <div class="user-profile-menu-wrapper" id="userProfileMenuWrapper">
+              <button type="button" class="user-avatar" id="userAvatar" title="Your Account" aria-label="Your Account" aria-haspopup="true" aria-expanded="false">U</button>
+              <div id="profileDropdown" class="profile-dropdown" style="display:none;" role="menu" aria-label="Account Menu"></div>
+            </div>
+            <button id="logoutBtn" class="control-btn" title="Log Out" aria-label="Log Out">
+              <i class="fa-solid fa-right-from-bracket"></i>
+            </button>
+          </div>
+        </header>
+
+        <!-- Mood & Category Filter Pills Row (Reference Matching) -->
+        <div class="mood-pills-bar" id="moodPillsBar">
+          <button type="button" class="mood-pill active" data-mood="all">All</button>
+          <button type="button" class="mood-pill" data-mood="energize"><i class="fa-solid fa-bolt-lightning"></i> Energize</button>
+          <button type="button" class="mood-pill" data-mood="feel-good"><i class="fa-solid fa-sun"></i> Feel good</button>
+          <button type="button" class="mood-pill" data-mood="chill"><i class="fa-solid fa-mug-hot"></i> Relax</button>
+          <button type="button" class="mood-pill" data-mood="workout"><i class="fa-solid fa-dumbbell"></i> Workout</button>
+          <button type="button" class="mood-pill" data-mood="sad"><i class="fa-solid fa-cloud-rain"></i> Sad</button>
+          <button type="button" class="mood-pill" data-mood="party"><i class="fa-solid fa-champagne-glasses"></i> Party</button>
+          <button type="button" class="mood-pill" data-mood="focus"><i class="fa-solid fa-brain"></i> Focus</button>
+          <button type="button" class="mood-pill" data-mood="romantic"><i class="fa-solid fa-heart"></i> Romance</button>
+          <button type="button" class="mood-pill" data-mood="sleep"><i class="fa-solid fa-moon"></i> Sleep</button>
+        </div>
+
+        <!-- Dynamic View Container -->
+        <div id="mainView" class="view-container">
+          <!-- View content dynamically rendered here -->
+        </div>
+
+        <!-- Expanded Player Card (Over Center Panel) -->
+        <div id="fullscreenPlayerDrawer" class="fullscreen-player-drawer">
+          <div class="drawer-header">
+            <button id="closeDrawerBtn1" class="control-btn" title="Close Player" aria-label="Close Player">
+              <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="drawer-tabs">
+              <div class="drawer-tab active" data-tab="queue">Queue</div>
+              <div class="drawer-tab" data-tab="lyrics">Lyrics</div>
+              <div class="drawer-tab" data-tab="related">Related</div>
+            </div>
+            <button id="closeDrawerBtn2" class="control-btn" title="Close Player" aria-label="Close Player"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+
+          <div class="drawer-body">
+            <!-- Left: Cover & Track Info -->
+            <div class="drawer-cover-box">
+              <img id="drawerCover" class="drawer-cover-img" src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&auto=format&fit=crop" alt="Now Playing Artwork">
+              <div class="drawer-track-meta">
+                <h2 id="drawerTitle" class="drawer-track-title">No Track Selected</h2>
+                <p id="drawerArtist" class="drawer-track-artist">Choose a track to stream</p>
+              </div>
+            </div>
+
+            <!-- Right: Up Next Queue or Synchronized Lyrics -->
+            <div class="drawer-content-box">
+              <div id="drawerTabContentQueue">
+                <div class="drawer-section-header">
+                  <span class="drawer-section-title">Up Next</span>
+                  <button id="clearQueueBtn" class="btn-primary btn-auto btn-sm">Clear Queue</button>
+                </div>
+                <div id="drawerQueueList" class="track-list">
+                  <!-- Up next queue items -->
+                </div>
+              </div>
+
+              <div id="drawerTabContentLyrics" style="display:none;">
+                <h3 class="drawer-panel-title"><i class="fa-solid fa-align-left"></i> Lyrics</h3>
+                <div id="lyricsContent" class="lyrics-text">Loading lyrics...</div>
+              </div>
+
+              <div id="drawerTabContentRelated" style="display:none;">
+                <h3 class="drawer-panel-title">More by this Artist</h3>
+                <div id="relatedTracksList" class="track-list">
+                  <!-- Related tracks list -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Right Sidebar: Recent Played Floating Glass Panel -->
+    <aside class="recent-played-sidebar" id="recentPlayedSidebar">
+      <div class="recent-played-glass-card">
+        <div class="recent-played-header">
+          <h3 class="recent-played-title">Recent Played</h3>
+          <a href="#history" class="recent-played-see-all">See All</a>
+        </div>
+
+        <div id="recentPlayedList" class="recent-played-list">
+          <div class="recent-played-loading">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            <span>Loading recent tracks...</span>
+          </div>
         </div>
       </div>
     </aside>
 
-    <!-- Main Content Area -->
-    <main class="main-content">
-      
-      <!-- YouTube Music Filter Pills Bar with Singer Search & Scroll Bar -->
-      <div class="filter-pills-wrapper">
-        <button id="scrollPillsLeft" class="pill-scroll-arrow left" title="Scroll Left">
-          <i class="fa-solid fa-chevron-left"></i>
-        </button>
-
-        <div class="filter-pills-bar" id="genrePills">
-          <!-- Singer Quick Search Input Pill -->
-          <div class="singer-search-pill" title="Type any singer name to search songs">
-            <i class="fa-solid fa-microphone" style="color:var(--accent-yt-red);"></i>
-            <input type="text" id="singerBarInput" placeholder="Filter by singer name..." autocomplete="off">
-          </div>
-
-          <button class="filter-pill active" data-genre="all">All</button>
-          
-          <!-- Top Singer Pills -->
-          <button class="filter-pill singer-pill" data-genre="nusrat"><span class="pill-icon">👑</span> Nusrat Fateh Ali Khan</button>
-          <button class="filter-pill singer-pill" data-genre="arijit"><span class="pill-icon">🎤</span> Arijit Singh</button>
-          <button class="filter-pill singer-pill" data-genre="arrahman"><span class="pill-icon">🎵</span> A.R. Rahman</button>
-          <button class="filter-pill singer-pill" data-genre="kishore"><span class="pill-icon">🎶</span> Kishore Kumar</button>
-          <button class="filter-pill singer-pill" data-genre="lata"><span class="pill-icon">🌟</span> Lata Mangeshkar</button>
-          <button class="filter-pill singer-pill" data-genre="atif"><span class="pill-icon">👑</span> Atif Aslam</button>
-          <button class="filter-pill singer-pill" data-genre="diljit"><span class="pill-icon">🎙️</span> Diljit Dosanjh</button>
-          <button class="filter-pill singer-pill" data-genre="karan"><span class="pill-icon">🔥</span> Karan Aujla</button>
-          <button class="filter-pill singer-pill" data-genre="shreya"><span class="pill-icon">💖</span> Shreya Ghoshal</button>
-          <button class="filter-pill singer-pill" data-genre="sonu"><span class="pill-icon">🎼</span> Sonu Nigam</button>
-          <button class="filter-pill singer-pill" data-genre="jubin"><span class="pill-icon">🎶</span> Jubin Nautiyal</button>
-          <button class="filter-pill singer-pill" data-genre="darshan"><span class="pill-icon">🌟</span> Darshan Raval</button>
-          <button class="filter-pill singer-pill" data-genre="taylor"><span class="pill-icon">🎧</span> Taylor Swift</button>
-          <button class="filter-pill singer-pill" data-genre="edsheeran"><span class="pill-icon">🎸</span> Ed Sheeran</button>
-          <button class="filter-pill singer-pill" data-genre="weeknd"><span class="pill-icon">🌙</span> The Weeknd</button>
-          <button class="filter-pill singer-pill" data-genre="drake"><span class="pill-icon">🎹</span> Drake</button>
-
-          <!-- Category Pills -->
-          <button class="filter-pill" data-genre="bollywood">🎬 Bollywood</button>
-          <button class="filter-pill" data-genre="hollywood">🌟 Hollywood Pop</button>
-          <button class="filter-pill" data-genre="punjabi">🔥 Punjabi Beats</button>
-          <button class="filter-pill" data-genre="romantic">💖 Hindi Romantic</button>
-          <button class="filter-pill" data-genre="south">🎸 South Hits</button>
-          <button class="filter-pill" data-genre="hiphop">🎹 Desi Hip Hop</button>
-          <button class="filter-pill" data-genre="lofi">🌙 Lo-Fi Vibes</button>
-          <button class="filter-pill" data-genre="workout">⚡ Workout</button>
-          <button class="filter-pill" data-genre="focus">🧘 Focus</button>
-          <button class="filter-pill" data-genre="relax">🎧 Chill & Relax</button>
-        </div>
-
-        <button id="scrollPillsRight" class="pill-scroll-arrow right" title="Scroll Right">
-          <i class="fa-solid fa-chevron-right"></i>
-        </button>
-      </div>
-
-      <!-- Dynamic View Container -->
-      <div id="mainView" class="view-container">
-        <!-- View content dynamically rendered here -->
-      </div>
-
-    </main>
-
-    <!-- Persistent Bottom YouTube Music Player Bar -->
+    <!-- Persistent Bottom Floating Player Dock -->
     <div class="player-bar">
       
-      <!-- Left: Track Info & Reactions -->
+      <!-- Left: Track Info, Verified Badge & Reactions -->
       <div class="now-playing">
-        <img id="playerCover" class="now-playing-cover" src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=200&auto=format&fit=crop" alt="Cover" onclick="app.toggleFullscreenPlayer()">
+        <img id="playerCover" class="now-playing-cover" src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=200&auto=format&fit=crop" alt="Now Playing Cover">
         <div class="now-playing-info">
-          <span id="playerTitle" class="now-playing-title" onclick="app.toggleFullscreenPlayer()">No Track Selected</span>
+          <div class="now-playing-title-row">
+            <span id="playerTitle" class="now-playing-title">No Track Selected</span>
+            <i class="fa-solid fa-circle-check player-verified-badge" title="Verified Track" aria-label="Verified Track"></i>
+          </div>
           <span id="playerArtist" class="now-playing-artist">Choose a track to stream</span>
         </div>
         <div class="player-reaction-btns">
-          <button id="playerDislikeBtn" class="reaction-btn" title="Dislike / Skip">
-            <i class="fa-regular fa-thumbs-down"></i>
-          </button>
-          <button id="playerLikeBtn" class="reaction-btn" title="Like Song">
+          <button id="playerLikeBtn" class="reaction-btn" title="Like Track" aria-label="Like Track">
             <i class="fa-regular fa-thumbs-up"></i>
+          </button>
+          <button id="playerAddToPlaylistBtn" class="reaction-btn" title="Add to Playlist" aria-label="Add to Playlist">
+            <i class="fa-solid fa-plus"></i>
           </button>
         </div>
       </div>
@@ -198,7 +318,7 @@
         </div>
       </div>
 
-      <!-- Right: Lyrics, Queue & Volume -->
+      <!-- Right: Lyrics, Queue & Volume & Audio Enhancer -->
       <div class="player-controls-right">
         <div id="equalizer" class="equalizer-icon paused" title="Audio Stream Playing">
           <div class="equalizer-bar"></div>
@@ -207,11 +327,11 @@
           <div class="equalizer-bar"></div>
         </div>
 
-        <button id="lyricsToggleBtn" class="control-btn" title="Lyrics" onclick="app.openFullscreenPlayer('lyrics')">
+        <button id="lyricsToggleBtn" class="control-btn" title="Lyrics">
           <i class="fa-solid fa-align-left"></i>
         </button>
 
-        <button id="queueToggleBtn" class="control-btn" title="Up Next Queue" onclick="app.openFullscreenPlayer('queue')">
+        <button id="queueToggleBtn" class="control-btn" title="Up Next Queue">
           <i class="fa-solid fa-list-ul"></i>
         </button>
 
@@ -222,8 +342,12 @@
           <input type="range" id="volumeBar" class="range-slider" min="0" max="1" step="0.01" value="0.8">
         </div>
 
-        <button id="expandPlayerBtn" class="control-btn" title="Expand Player" onclick="app.toggleFullscreenPlayer()">
-          <i class="fa-solid fa-chevron-up"></i>
+        <button id="audioEnhancerBtn" class="control-btn enhancer-control-btn" title="Audio Quality & Equalizer">
+          <i class="fa-solid fa-sliders"></i>
+        </button>
+
+        <button id="expandPlayerBtn" class="control-btn" title="Expand Player">
+          <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
         </button>
       </div>
 
@@ -231,72 +355,44 @@
 
   </div>
 
-  <!-- YouTube Music Fullscreen Expanded Player Drawer -->
-  <div id="fullscreenPlayerDrawer" class="fullscreen-player-drawer">
-    <div class="drawer-header">
-      <button class="control-btn" onclick="app.toggleFullscreenPlayer(false)" title="Close Player">
-        <i class="fa-solid fa-chevron-down"></i>
-      </button>
-      <div class="drawer-tabs">
-        <div class="drawer-tab active" data-tab="queue" onclick="app.switchDrawerTab('queue')">UP NEXT</div>
-        <div class="drawer-tab" data-tab="lyrics" onclick="app.switchDrawerTab('lyrics')">LYRICS</div>
-        <div class="drawer-tab" data-tab="related" onclick="app.switchDrawerTab('related')">RELATED</div>
-      </div>
-      <button class="control-btn" onclick="app.toggleFullscreenPlayer(false)"><i class="fa-solid fa-xmark"></i></button>
-    </div>
 
-    <div class="drawer-body">
-      <!-- Left: Giant Cover & Track Info -->
-      <div class="drawer-cover-box">
-        <img id="drawerCover" class="drawer-cover-img" src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&auto=format&fit=crop" alt="Cover">
-        <div class="drawer-track-meta">
-          <h2 id="drawerTitle" class="drawer-track-title">No Track Selected</h2>
-          <p id="drawerArtist" class="drawer-track-artist">Choose a track to stream</p>
-        </div>
-      </div>
-
-      <!-- Right: Up Next Queue or Synchronized Lyrics -->
-      <div class="drawer-content-box">
-        <div id="drawerTabContentQueue">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-            <span style="font-weight:700; font-size:16px;">Playing From Playlist</span>
-            <button class="btn-primary" style="width:auto; padding:6px 14px; font-size:12px;" onclick="player.clearQueue()">Clear Queue</button>
-          </div>
-          <div id="drawerQueueList" class="track-list">
-            <!-- Up next queue items -->
-          </div>
-        </div>
-
-        <div id="drawerTabContentLyrics" style="display:none;">
-          <h3 style="font-size:18px; font-weight:700; margin-bottom:16px; color:var(--accent-yt-red);"><i class="fa-solid fa-align-left"></i> Real-Time Lyrics</h3>
-          <div id="lyricsContent" class="lyrics-text">Loading lyrics...</div>
-        </div>
-
-        <div id="drawerTabContentRelated" style="display:none;">
-          <h3 style="font-size:18px; font-weight:700; margin-bottom:16px;">Similar Tracks & Artists</h3>
-          <div id="relatedTracksList" class="track-list">
-            <!-- Related tracks list -->
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- Create Playlist Modal -->
   <div id="createPlaylistModal" class="modal-overlay">
-    <div class="modal-content">
+    <div class="modal-content modal-content-sm">
       <div class="modal-header">
-        <h3 style="font-size: 18px; font-weight: 700;">Create Playlist</h3>
-        <button class="control-btn closeModalBtn"><i class="fa-solid fa-xmark"></i></button>
+        <h3 class="modal-title">Create Playlist</h3>
+        <button class="control-btn closeModalBtn" title="Close Modal" aria-label="Close Modal"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <form id="createPlaylistForm">
         <div class="form-group">
           <label for="playlistNameInput">Playlist Name</label>
-          <input type="text" id="playlistNameInput" class="form-control" style="padding-left:14px;" placeholder="e.g. My Favorites" required>
+          <input type="text" id="playlistNameInput" class="form-control" placeholder="e.g. My Favorites" required>
         </div>
-        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:24px;">
-          <button type="button" class="control-btn closeModalBtn" style="width:auto; padding:8px 16px;">Cancel</button>
-          <button type="submit" class="btn-primary" style="width:auto;">Create</button>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary closeModalBtn">Cancel</button>
+          <button type="submit" class="btn-primary btn-auto">Create</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Rename Playlist Modal -->
+  <div id="renamePlaylistModal" class="modal-overlay">
+    <div class="modal-content modal-content-sm">
+      <div class="modal-header">
+        <h3 class="modal-title">Rename Playlist</h3>
+        <button class="control-btn closeModalBtn" title="Close Modal" aria-label="Close Modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="renamePlaylistForm">
+        <input type="hidden" id="renamePlaylistId">
+        <div class="form-group">
+          <label for="renamePlaylistNameInput">Playlist Name</label>
+          <input type="text" id="renamePlaylistNameInput" class="form-control" placeholder="New playlist name" required>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary closeModalBtn">Cancel</button>
+          <button type="submit" class="btn-primary btn-auto">Save Changes</button>
         </div>
       </form>
     </div>
@@ -304,14 +400,510 @@
 
   <!-- Add to Playlist Selector Modal -->
   <div id="addToPlaylistModal" class="modal-overlay">
-    <div class="modal-content">
+    <div class="modal-content modal-content-sm">
       <div class="modal-header">
-        <h3 style="font-size: 18px; font-weight: 700;">Add to Playlist</h3>
-        <button class="control-btn closeModalBtn"><i class="fa-solid fa-xmark"></i></button>
+        <h3 class="modal-title">Add to Playlist</h3>
+        <button class="control-btn closeModalBtn" title="Close Modal" aria-label="Close Modal"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      <div id="playlistSelectList" style="display:flex; flex-direction:column; gap:8px; max-height:300px; overflow-y:auto; margin-bottom:20px;">
+      <div id="playlistSelectList" class="playlist-select-list">
         <!-- Playlist options loaded here -->
       </div>
+    </div>
+  </div>
+
+  <!-- Keyboard Shortcuts Help Modal -->
+  <div id="shortcutsModal" class="modal-overlay">
+    <div class="modal-content modal-content-sm">
+      <div class="modal-header">
+        <h3 class="modal-title modal-title-flex"><i class="fa-solid fa-keyboard modal-title-icon"></i> Keyboard Shortcuts</h3>
+        <button class="control-btn closeModalBtn" title="Close Modal" aria-label="Close Modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="shortcuts-grid">
+        <div class="shortcut-row"><span class="shortcut-desc">Play / Pause</span><kbd class="key-cap">Space</kbd></div>
+        <div class="shortcut-row"><span class="shortcut-desc">Next Track in Queue</span><kbd class="key-cap">N</kbd></div>
+        <div class="shortcut-row"><span class="shortcut-desc">Previous Track in Queue</span><kbd class="key-cap">P</kbd></div>
+        <div class="shortcut-row"><span class="shortcut-desc">Seek Backward 5s</span><kbd class="key-cap">←</kbd></div>
+        <div class="shortcut-row"><span class="shortcut-desc">Seek Forward 5s</span><kbd class="key-cap">→</kbd></div>
+        <div class="shortcut-row"><span class="shortcut-desc">Mute / Unmute Audio</span><kbd class="key-cap">M</kbd></div>
+        <div class="shortcut-row"><span class="shortcut-desc">Focus Global Search</span><kbd class="key-cap">/</kbd></div>
+        <div class="shortcut-row"><span class="shortcut-desc">Close Modal / Player</span><kbd class="key-cap">Esc</kbd></div>
+        <div class="shortcut-row"><span class="shortcut-desc">Show Shortcuts Help</span><kbd class="key-cap">?</kbd></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio Quality & Equalizer Modal -->
+  <div id="audioEnhancerModal" class="modal-overlay">
+    <div class="modal-content modal-content-md">
+      <div class="modal-header">
+        <h3 class="modal-title modal-title-flex">
+          <i class="fa-solid fa-sliders modal-title-icon"></i>
+          <span>Audio Quality &amp; Equalizer</span>
+        </h3>
+        <button class="control-btn closeModalBtn" title="Close Modal" aria-label="Close Modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="eq-modal-body">
+        <!-- Quality Selection -->
+        <div class="eq-section">
+          <div class="eq-section-title">
+            <span>Streaming Audio Quality</span>
+            <span class="eq-badge-hd" id="currentQualityBadge">320 kbps Ultra HD</span>
+          </div>
+          <div class="quality-selector-group">
+            <button class="quality-btn active" id="qualityHdBtn" data-quality="hd">
+              <i class="fa-solid fa-bolt quality-icon-hd"></i>
+              <div class="quality-btn-text">
+                <span class="quality-btn-title">320 kbps Ultra HD</span>
+                <span class="quality-btn-desc">Crystal-clear studio audio &amp; rich dynamics</span>
+              </div>
+            </button>
+            <button class="quality-btn" id="qualityStandardBtn" data-quality="standard">
+              <i class="fa-solid fa-gauge quality-icon-std"></i>
+              <div class="quality-btn-text">
+                <span class="quality-btn-title">160 kbps Standard</span>
+                <span class="quality-btn-desc">Data saver mode for slow mobile connections</span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <div id="dspUnavailableNotice" style="display:none; padding:10px 14px; margin-bottom:16px; border-radius:8px; background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.25); color:#fca5a5; font-size:12px; line-height:1.5;">
+          <i class="fa-solid fa-triangle-exclamation" style="margin-right:6px;"></i> Equalizer is unavailable for this external stream (CORS required). Audio is playing normally in standard playback mode.
+        </div>
+
+        <!-- Presets -->
+        <div class="eq-section">
+          <div class="eq-section-title">Equalizer Sound Presets</div>
+          <div class="eq-presets-grid">
+            <button class="eq-preset-btn active" data-preset="studio">Studio HD</button>
+            <button class="eq-preset-btn" data-preset="bass">Deep Bass</button>
+            <button class="eq-preset-btn" data-preset="vocal">Vocal Clarity</button>
+            <button class="eq-preset-btn" data-preset="club">Dynamic Club</button>
+            <button class="eq-preset-btn" data-preset="flat">Flat / Bypass</button>
+          </div>
+        </div>
+
+        <!-- 3-Band Equalizer Sliders -->
+        <div class="eq-section">
+          <div class="eq-section-title">
+            <span>3-Band Studio Equalizer (DSP)</span>
+            <button id="resetEqBtn" class="eq-reset-btn" title="Reset to defaults">Reset EQ</button>
+          </div>
+          <div class="eq-sliders-container">
+            <div class="eq-slider-group">
+              <div class="eq-slider-label">
+                <span>Bass (Low Punch &amp; Sub)</span>
+                <span id="bassValueDisplay" class="eq-val-display">+3.5 dB</span>
+              </div>
+              <input type="range" id="eqBassSlider" class="range-slider eq-slider" min="-12" max="12" step="0.5" value="3.5">
+            </div>
+
+            <div class="eq-slider-group">
+              <div class="eq-slider-label">
+                <span>Mids (Vocals &amp; Instruments)</span>
+                <span id="midValueDisplay" class="eq-val-display">+1.5 dB</span>
+              </div>
+              <input type="range" id="eqMidSlider" class="range-slider eq-slider" min="-12" max="12" step="0.5" value="1.5">
+            </div>
+
+            <div class="eq-slider-group">
+              <div class="eq-slider-label">
+                <span>Treble (Crisp Highs &amp; Air)</span>
+                <span id="trebleValueDisplay" class="eq-val-display">+3.5 dB</span>
+              </div>
+              <input type="range" id="eqTrebleSlider" class="range-slider eq-slider" min="-12" max="12" step="0.5" value="3.5">
+            </div>
+          </div>
+        </div>
+
+        <!-- Dynamics Compressor / Anti-Distortion Toggle -->
+        <div class="eq-section eq-toggle-row">
+          <div>
+            <strong>Anti-Clipping &amp; Loudness Limiter</strong>
+            <small class="toggle-subtext">Prevents audio distortion, cracking &amp; normalizes volume</small>
+          </div>
+          <label class="switch-toggle" for="compressorToggle">
+            <input type="checkbox" id="compressorToggle" checked>
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal (YouTube Music Style 2-Column Modal - Image 1) -->
+  <div id="settingsModal" class="modal-overlay">
+    <div class="modal-content settings-modal-content">
+      <div class="settings-modal-header">
+        <h3 class="settings-modal-title">Settings</h3>
+        <button type="button" class="control-btn closeModalBtn" title="Close Settings" aria-label="Close Settings">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="settings-modal-body">
+        <!-- Left Sidebar Tabs -->
+        <nav class="settings-nav-sidebar" role="tablist" aria-label="Settings Categories">
+          <button type="button" class="settings-nav-tab active" data-tab="general" role="tab" aria-selected="true">
+            <span>General</span>
+          </button>
+          <button type="button" class="settings-nav-tab" data-tab="playback" role="tab" aria-selected="false">
+            <span>Playback</span>
+          </button>
+          <button type="button" class="settings-nav-tab" data-tab="downloads" role="tab" aria-selected="false">
+            <span>Downloads</span>
+          </button>
+          <button type="button" class="settings-nav-tab" data-tab="privacy" role="tab" aria-selected="false">
+            <span>Privacy and data</span>
+          </button>
+          <button type="button" class="settings-nav-tab" data-tab="channel" role="tab" aria-selected="false">
+            <span>Channel settings</span>
+          </button>
+          <button type="button" class="settings-nav-tab" data-tab="recommendations" role="tab" aria-selected="false">
+            <span>Recommendations</span>
+          </button>
+          <button type="button" class="settings-nav-tab" data-tab="language" role="tab" aria-selected="false">
+            <span>Language and location</span>
+          </button>
+          <button type="button" class="settings-nav-tab" data-tab="about" role="tab" aria-selected="false">
+            <span>About</span>
+          </button>
+        </nav>
+
+        <!-- Right Content Pane -->
+        <div class="settings-tab-content-area" id="settingsTabContentArea">
+          <!-- Tab 1: General (Image 1) -->
+          <div class="settings-tab-panel active" id="settingsTab-general" role="tabpanel">
+            <div class="yt-setting-row">
+              <div class="yt-setting-row-top">
+                <span class="yt-setting-title">Restricted Mode</span>
+                <label class="yt-toggle" for="restrictedModeToggle">
+                  <input type="checkbox" id="restrictedModeToggle">
+                  <span class="yt-toggle-slider"></span>
+                </label>
+              </div>
+              <p class="yt-setting-desc">Restricted Mode can help to hide videos and songs with potentially mature content. No filter is 100% accurate, but it should help you to avoid most of this type of content.</p>
+            </div>
+
+            <div class="yt-setting-row">
+              <div class="yt-setting-row-top">
+                <span class="yt-setting-title">Show your liked music from YouTube</span>
+                <label class="yt-toggle" for="showLikedMusicToggle">
+                  <input type="checkbox" id="showLikedMusicToggle" checked>
+                  <span class="yt-toggle-slider"></span>
+                </label>
+              </div>
+              <p class="yt-setting-desc">Music videos that you've marked with a thumbs up in other YouTube apps will be shown in the 'Your likes' playlist</p>
+            </div>
+
+            <div class="yt-setting-row">
+              <div class="yt-setting-row-top">
+                <span class="yt-setting-title">Remember most recently used playlist</span>
+                <label class="yt-toggle" for="rememberRecentPlaylistToggle">
+                  <input type="checkbox" id="rememberRecentPlaylistToggle" checked>
+                  <span class="yt-toggle-slider"></span>
+                </label>
+              </div>
+              <p class="yt-setting-desc">Automatically save content to the most recently used playlist</p>
+            </div>
+
+            <div class="yt-setting-row yt-setting-row-clickable" id="familyCentreRow" tabindex="0" role="button">
+              <div class="yt-setting-row-top">
+                <span class="yt-setting-title">Go to Family Centre</span>
+                <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:12px; color:var(--text-dim);"></i>
+              </div>
+              <p class="yt-setting-desc">Tools to connect parents, kids and teens on YouTube</p>
+            </div>
+          </div>
+
+          <!-- Tab 2: Playback -->
+          <div class="settings-tab-panel" id="settingsTab-playback" role="tabpanel">
+            <div class="yt-setting-row">
+              <div class="yt-setting-row-top">
+                <span class="yt-setting-title">Streaming Audio Quality</span>
+                <div class="yt-pill-group">
+                  <button type="button" class="yt-pill-btn active" id="modalQualityHdBtn">320 kbps Ultra HD</button>
+                  <button type="button" class="yt-pill-btn" id="modalQualityStdBtn">160 kbps Standard</button>
+                </div>
+              </div>
+              <p class="yt-setting-desc">Stream studio-grade 320 kbps HD audio or standard quality data saver.</p>
+            </div>
+
+            <div class="yt-setting-row">
+              <div class="yt-setting-row-top">
+                <span class="yt-setting-title">Anti-Clipping &amp; Loudness Limiter</span>
+                <label class="yt-toggle" for="modalCompressorToggle">
+                  <input type="checkbox" id="modalCompressorToggle" checked>
+                  <span class="yt-toggle-slider"></span>
+                </label>
+              </div>
+              <p class="yt-setting-desc">Normalizes loudness dynamics across tracks and prevents distortion.</p>
+            </div>
+
+            <div class="yt-setting-row yt-setting-row-clickable" id="modalOpenEqualizerBtn" tabindex="0" role="button">
+              <div class="yt-setting-row-top">
+                <span class="yt-setting-title">Equalizer DSP Studio</span>
+                <span class="btn-secondary btn-auto" style="padding:4px 12px; font-size:12px;">Open Equalizer</span>
+              </div>
+              <p class="yt-setting-desc">Adjust 3-band acoustic frequencies (Bass, Mid, Treble) and studio presets.</p>
+            </div>
+
+            <div class="yt-setting-row">
+              <div class="yt-setting-row-top">
+                <span class="yt-setting-title">Master Output Volume</span>
+                <span id="modalVolumeValue" style="font-size:13px; font-weight:700; color:var(--text-main);">80%</span>
+              </div>
+              <input type="range" id="modalVolumeSlider" class="range-slider" min="0" max="100" value="80" style="width:100%; margin-top:8px;">
+            </div>
+          </div>
+
+          <!-- Tab 3: Downloads -->
+          <div class="settings-tab-panel" id="settingsTab-downloads" role="tabpanel">
+            <div class="yt-setting-row">
+              <div class="yt-setting-row-top">
+                <span class="yt-setting-title">Download audio quality</span>
+                <select id="downloadQualitySelect" class="form-control" style="width:160px; padding:6px 10px; font-size:13px;">
+                  <option value="320">High (320 kbps)</option>
+                  <option value="160">Standard (160 kbps)</option>
+                </select>
+              </div>
+              <p class="yt-setting-desc">Higher quality tracks use more storage space on your device.</p>
+            </div>
+
+            <div class="yt-setting-row">
+              <div class="yt-setting-row-top">
+                <span class="yt-setting-title">Download over Wi-Fi only</span>
+                <label class="yt-toggle" for="downloadWifiToggle">
+                  <input type="checkbox" id="downloadWifiToggle" checked>
+                  <span class="yt-toggle-slider"></span>
+                </label>
+              </div>
+              <p class="yt-setting-desc">Prevent data usage by downloading content only when connected to Wi-Fi.</p>
+            </div>
+
+            <div class="yt-setting-row">
+              <div class="yt-setting-row-top">
+                <span class="yt-setting-title">Offline storage cache</span>
+                <button type="button" id="clearDownloadsBtn" class="btn-secondary btn-auto" style="padding:6px 14px; font-size:12px;">Clear Cache</button>
+              </div>
+              <p class="yt-setting-desc">Free up disk space used by cached songs and artwork.</p>
+            </div>
+          </div>
+
+          <!-- Tab 4: Privacy and data -->
+          <div class="settings-tab-panel" id="settingsTab-privacy" role="tabpanel">
+            <div class="yt-setting-row">
+              <div class="yt-setting-row-top">
+                <span class="yt-setting-title" style="color:#f87171;">Clear listening history</span>
+                <button type="button" id="modalClearHistoryBtn" class="btn-danger btn-auto" style="padding:6px 14px; font-size:12px;">Clear History</button>
+              </div>
+              <p class="yt-setting-desc">Permanently remove all listening playback history and resume checkpoints.</p>
+            </div>
+
+            <div class="yt-setting-row">
+              <div class="yt-setting-row-top">
+                <span class="yt-setting-title">Pause listening history</span>
+                <label class="yt-toggle" for="pauseHistoryToggle">
+                  <input type="checkbox" id="pauseHistoryToggle">
+                  <span class="yt-toggle-slider"></span>
+                </label>
+              </div>
+              <p class="yt-setting-desc">When paused, newly played tracks will not be saved to your playback history or profile.</p>
+            </div>
+
+            <div class="yt-setting-row">
+              <div class="yt-setting-row-top">
+                <span class="yt-setting-title">Clear search history</span>
+                <button type="button" id="clearSearchHistoryBtn" class="btn-secondary btn-auto" style="padding:6px 14px; font-size:12px;">Clear Searches</button>
+              </div>
+              <p class="yt-setting-desc">Reset previous query suggestions and search keywords.</p>
+            </div>
+
+            <div class="yt-setting-row">
+              <span class="yt-setting-title">Data Protection &amp; Security</span>
+              <p class="yt-setting-desc" style="margin-top:6px;">Your account information, passwords, and playlists are encrypted and strictly isolated. We do not sell personal listening metrics to third parties.</p>
+            </div>
+          </div>
+
+          <!-- Tab 5: Channel settings -->
+          <div class="settings-tab-panel" id="settingsTab-channel" role="tabpanel">
+            <div class="yt-setting-row">
+              <form id="modalProfileForm" style="display:flex; flex-direction:column; gap:12px; width:100%;">
+                <div class="form-group" style="margin-bottom:4px;">
+                  <label class="settings-label" for="modalNameInput">Display Name</label>
+                  <input type="text" id="modalNameInput" class="form-control" maxlength="50" required style="padding-left:14px;">
+                </div>
+                <div class="form-group" style="margin-bottom:4px;">
+                  <label class="settings-label" for="modalEmailInput">Email Address</label>
+                  <input type="email" id="modalEmailInput" class="form-control" disabled readonly style="padding-left:14px; opacity:0.65; cursor:not-allowed;">
+                </div>
+                <button type="submit" class="btn-primary btn-auto" style="align-self:flex-start; padding:8px 18px; font-size:13px;">Save Display Name</button>
+              </form>
+            </div>
+
+            <div class="yt-setting-row" style="border-top:1px solid rgba(255,255,255,0.06); padding-top:18px;">
+              <h4 style="font-size:14px; font-weight:600; color:#fff; margin-bottom:12px;">Change Password</h4>
+              <form id="modalPasswordForm" style="display:flex; flex-direction:column; gap:10px; width:100%;">
+                <input type="password" id="modalCurrentPass" class="form-control" placeholder="Current Password" required style="padding-left:14px;">
+                <input type="password" id="modalNewPass" class="form-control" placeholder="New Password (min 8 characters)" minlength="8" required style="padding-left:14px;">
+                <input type="password" id="modalConfirmPass" class="form-control" placeholder="Confirm New Password" minlength="8" required style="padding-left:14px;">
+                <button type="submit" class="btn-primary btn-auto" style="align-self:flex-start; padding:8px 18px; font-size:13px;">Update Password</button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Tab 6: Recommendations -->
+          <div class="settings-tab-panel" id="settingsTab-recommendations" role="tabpanel">
+            <div class="yt-setting-row">
+              <div class="yt-setting-row-top">
+                <span class="yt-setting-title">Smart Mood &amp; Genre Personalization</span>
+                <label class="yt-toggle" for="smartRecToggle">
+                  <input type="checkbox" id="smartRecToggle" checked>
+                  <span class="yt-toggle-slider"></span>
+                </label>
+              </div>
+              <p class="yt-setting-desc">Tailor Home feed recommendations based on your listening moods, liked songs, and favorite artists.</p>
+            </div>
+
+            <div class="yt-setting-row">
+              <div class="yt-setting-row-top">
+                <span class="yt-setting-title">Reset recommendation cache</span>
+                <button type="button" id="resetRecBtn" class="btn-secondary btn-auto" style="padding:6px 14px; font-size:12px;">Reset</button>
+              </div>
+              <p class="yt-setting-desc">Clear cached discovery clusters and refresh your daily mix recommendations.</p>
+            </div>
+          </div>
+
+          <!-- Tab 7: Language and location -->
+          <div class="settings-tab-panel" id="settingsTab-language" role="tabpanel">
+            <div class="yt-setting-row">
+              <div class="yt-setting-row-top">
+                <span class="yt-setting-title">App Language</span>
+                <select id="modalLangSelect" class="form-control" style="width:160px; padding:6px 10px; font-size:13px;">
+                  <option value="en">English (US)</option>
+                  <option value="en-gb">English (UK)</option>
+                  <option value="hi">Hindi (हिन्दी)</option>
+                  <option value="es">Spanish (Español)</option>
+                  <option value="fr">French (Français)</option>
+                </select>
+              </div>
+              <p class="yt-setting-desc">Choose your preferred display language for navigation and app menus.</p>
+            </div>
+
+            <div class="yt-setting-row">
+              <div class="yt-setting-row-top">
+                <span class="yt-setting-title">Content Location</span>
+                <select id="modalLocationSelect" class="form-control" style="width:160px; padding:6px 10px; font-size:13px;">
+                  <option value="IN">India</option>
+                  <option value="US">United States</option>
+                  <option value="GB">United Kingdom</option>
+                  <option value="GLOBAL">Worldwide</option>
+                </select>
+              </div>
+              <p class="yt-setting-desc">Localizes trending charts, top songs, and regional artist spotlights.</p>
+            </div>
+          </div>
+
+          <!-- Tab 8: About -->
+          <div class="settings-tab-panel" id="settingsTab-about" role="tabpanel">
+            <div class="yt-setting-row">
+              <span class="yt-setting-title">AuraList Music Player</span>
+              <p class="yt-setting-desc">Version 1.0.0 &bull; Web Audio DSP Master Edition</p>
+            </div>
+            <div class="yt-setting-row">
+              <span class="yt-setting-title">Catalog &amp; Index</span>
+              <p class="yt-setting-desc">3,731 High-fidelity songs indexed across JioSaavn, Jamendo, and Audius providers.</p>
+            </div>
+            <div class="yt-setting-row">
+              <span class="yt-setting-title">Terms and privacy policy</span>
+              <p class="yt-setting-desc"><a href="javascript:void(0)" id="aboutTermsLink" style="color:var(--accent-secondary); text-decoration:none;">Terms of Service &amp; Privacy Policy</a></p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Get Music Premium Modal -->
+  <div id="premiumModal" class="modal-overlay">
+    <div class="modal-content modal-content-sm" style="text-align:center; padding:32px 24px;">
+      <div style="width:60px; height:60px; border-radius:50%; background:rgba(255,0,0,0.12); display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
+        <i class="fa-brands fa-youtube" style="color:#ff0000; font-size:32px;"></i>
+      </div>
+      <h3 style="font-size:20px; font-weight:700; color:#fff; margin-bottom:8px;">Get Music Premium</h3>
+      <p style="font-size:13px; color:var(--text-muted); margin-bottom:20px;">Listen without limits with ad-free playback, offline downloads, and 320 kbps Ultra HD Studio audio.</p>
+      <div style="background:rgba(255,255,255,0.04); border-radius:8px; padding:12px; text-align:left; margin-bottom:20px; font-size:12.5px; color:#ddd; display:flex; flex-direction:column; gap:8px;">
+        <div><i class="fa-solid fa-check" style="color:#3ea6ff; margin-right:8px;"></i> Ad-free music streaming</div>
+        <div><i class="fa-solid fa-check" style="color:#3ea6ff; margin-right:8px;"></i> 320 kbps Ultra HD studio dynamics</div>
+        <div><i class="fa-solid fa-check" style="color:#3ea6ff; margin-right:8px;"></i> Download tracks for offline listening</div>
+        <div><i class="fa-solid fa-check" style="color:#3ea6ff; margin-right:8px;"></i> Seamless background playback</div>
+      </div>
+      <button type="button" class="btn-primary" style="width:100%; padding:12px; font-size:14px;" onclick="UI.showToast('Music Premium features are active on your account!')">Active on Your Account</button>
+      <button type="button" class="btn-secondary closeModalBtn" style="margin-top:10px; width:100%;">Close</button>
+    </div>
+  </div>
+
+  <!-- Create a Channel Modal -->
+  <div id="channelModal" class="modal-overlay">
+    <div class="modal-content modal-content-sm" style="text-align:center; padding:28px 20px;">
+      <div style="width:52px; height:52px; border-radius:50%; background:rgba(40,184,255,0.12); display:flex; align-items:center; justify-content:center; margin:0 auto 14px;">
+        <i class="fa-regular fa-id-badge" style="color:var(--accent-secondary); font-size:26px;"></i>
+      </div>
+      <h3 style="font-size:18px; font-weight:700; color:#fff; margin-bottom:8px;">Your Creator Channel</h3>
+      <p style="font-size:13px; color:var(--text-muted); margin-bottom:20px;">Create public playlists, upload original audio, and share music with listeners across AuraList.</p>
+      <form id="createChannelForm">
+        <input type="text" id="channelNameInput" class="form-control" placeholder="Channel Name" required style="padding-left:14px; margin-bottom:14px;">
+        <button type="submit" class="btn-primary" style="width:100%; padding:10px; font-size:13.5px;">Create Channel</button>
+      </form>
+      <button type="button" class="btn-secondary closeModalBtn" style="margin-top:10px; width:100%;">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Switch Account Modal -->
+  <div id="switchAccountModal" class="modal-overlay">
+    <div class="modal-content modal-content-sm" style="padding:24px;">
+      <div class="modal-header" style="margin-bottom:16px;">
+        <h3 class="modal-title">Switch Account</h3>
+        <button class="control-btn closeModalBtn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div id="switchAccountList" style="display:flex; flex-direction:column; gap:10px; margin-bottom:16px;">
+        <!-- Current Account -->
+      </div>
+      <a href="/login" class="btn-secondary btn-auto" style="display:flex; align-items:center; justify-content:center; gap:8px; padding:10px; text-decoration:none; font-size:13px;">
+        <i class="fa-solid fa-plus"></i> Add Another Account
+      </a>
+    </div>
+  </div>
+
+  <!-- Upload Music Modal -->
+  <div id="uploadMusicModal" class="modal-overlay">
+    <div class="modal-content modal-content-sm" style="text-align:center; padding:28px 20px;">
+      <div style="width:52px; height:52px; border-radius:50%; background:rgba(0,220,160,0.12); display:flex; align-items:center; justify-content:center; margin:0 auto 14px;">
+        <i class="fa-solid fa-cloud-arrow-up" style="color:var(--accent); font-size:24px;"></i>
+      </div>
+      <h3 style="font-size:18px; font-weight:700; color:#fff; margin-bottom:8px;">Upload Your Music</h3>
+      <p style="font-size:13px; color:var(--text-muted); margin-bottom:18px;">Select MP3, WAV, or AAC audio files from your device to play and add to your library.</p>
+      <input type="file" id="localAudioFileInput" accept="audio/*" style="display:none;">
+      <button type="button" class="btn-primary" id="triggerAudioFileInputBtn" style="width:100%; padding:10px; font-size:13.5px;">Choose Audio File</button>
+      <button type="button" class="btn-secondary closeModalBtn" style="margin-top:10px; width:100%;">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Send Feedback Modal -->
+  <div id="feedbackModal" class="modal-overlay">
+    <div class="modal-content modal-content-sm" style="padding:24px;">
+      <div class="modal-header" style="margin-bottom:14px;">
+        <h3 class="modal-title">Send Feedback</h3>
+        <button class="control-btn closeModalBtn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:12px;">Tell us what you love or how we can improve your AuraList experience.</p>
+      <form id="feedbackForm">
+        <textarea id="feedbackText" class="form-control" rows="4" placeholder="Enter your feedback..." required style="padding:10px; width:100%; resize:vertical; font-family:inherit; margin-bottom:14px;"></textarea>
+        <button type="submit" class="btn-primary btn-auto" style="width:100%; padding:10px; font-size:13.5px;">Submit Feedback</button>
+      </form>
     </div>
   </div>
 

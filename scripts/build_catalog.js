@@ -1,4 +1,5 @@
 const CryptoJS = require('crypto-js');
+const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 
@@ -53,7 +54,11 @@ function formatJioSaavnTrack(item, genreTag = 'general') {
   const artistClean = decodeHTMLEntities(artistName || 'Various Artists');
   const albumClean = decodeHTMLEntities(moreInfo.album || item.album || 'Single');
   const durationSec = parseInt(moreInfo.duration || item.duration || '240', 10);
-  const trackId = String(item.id || item.song_id || Math.random().toString(36).substring(7));
+  let trackId = String(item.id || item.song_id || '').trim();
+  if (!trackId) {
+    const rawSeed = `${titleClean.toLowerCase()}:::${artistClean.toLowerCase()}:::${albumClean.toLowerCase()}`;
+    trackId = 'cat_' + crypto.createHash('sha256').update(rawSeed).digest('hex').substring(0, 10);
+  }
 
   return {
     id: trackId,
@@ -64,8 +69,11 @@ function formatJioSaavnTrack(item, genreTag = 'general') {
     coverUrl: formatImageUrl(item.image),
     audioUrl: audioUrl,
     duration: durationSec,
-    license: 'Full-Length Original Stream',
-    source: 'JioSaavn Official Catalog',
+    provider: 'JioSaavn',
+    versionInfo: 'Standard',
+    licensingStatus: 'Third-Party Stream (Unverified)',
+    license: 'Third-Party Stream (Unverified)',
+    source: 'JioSaavn Provider Stream',
     category: genreTag
   };
 }

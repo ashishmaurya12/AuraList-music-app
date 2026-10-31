@@ -1,7 +1,14 @@
 // API helper for token management and network requests
 const API = {
   getToken() {
-    return localStorage.getItem('auralist_token');
+    const token = localStorage.getItem('auralist_token');
+    if (!token || typeof token !== 'string') return null;
+    const trimmed = token.trim();
+    if (trimmed.split('.').length === 3) {
+      return trimmed;
+    }
+    this.clearAuth();
+    return null;
   },
 
   setToken(token) {
@@ -13,8 +20,18 @@ const API = {
   },
 
   getUser() {
-    const raw = localStorage.getItem('auralist_user');
-    return raw ? JSON.parse(raw) : null;
+    try {
+      const raw = localStorage.getItem('auralist_user');
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        return parsed;
+      }
+      return null;
+    } catch (e) {
+      this.clearAuth();
+      return null;
+    }
   },
 
   setUser(user) {
@@ -28,12 +45,22 @@ const API = {
   clearAuth() {
     localStorage.removeItem('auralist_token');
     localStorage.removeItem('auralist_user');
+    try {
+      if (typeof fetch === 'function') {
+        fetch('/api/auth/logout', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        }).catch(() => {});
+      }
+    } catch (e) {}
   },
 
   async request(endpoint, options = {}) {
     const token = this.getToken();
     const headers = {
       'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest',
       ...options.headers
     };
 
@@ -42,12 +69,17 @@ const API = {
     }
 
     const config = {
+      credentials: 'include',
       ...options,
       headers
     };
 
     try {
       const response = await fetch(`/api${endpoint}`, config);
+      if (response && response.headers && typeof response.headers.get === 'function') {
+        this.lastProviderStatus = response.headers.get('x-provider-status') || (response.ok ? 'online' : 'offline');
+        this.lastProviderError = response.headers.get('x-provider-error') || null;
+      }
       const data = await response.json().catch(() => ({}));
 
       if (response.status === 401) {

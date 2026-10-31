@@ -1,27 +1,47 @@
 {
   "name": "auralist",
   "version": "1.0.0",
-  "description": "Full-Stack Music Player Web App powered by Jamendo API proxy, Node.js/Express, JWT auth, and Vanilla JS SPA",
+  "description": "Full-Stack Music Player Web App powered by Auralist Music Engine, Node.js/Express, MongoDB, JWT auth, and Vanilla JS SPA",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node --watch server.js"
+    "dev": "node --watch server.js",
+    "test": "npm run test:unit && npm run test:integration",
+    "test:unit": "node ./node_modules/jest/bin/jest.js --config jest.unit.config.js --runInBand",
+    "test:integration": "node ./node_modules/jest/bin/jest.js --config jest.config.js --runInBand",
+    "test:provider:live": "node ./node_modules/jest/bin/jest.js --config jest.config.js -t \"real provider live query\" --runInBand",
+    "test:watch": "node ./node_modules/jest/bin/jest.js --config jest.unit.config.js --watch",
+    "test:coverage": "node ./node_modules/jest/bin/jest.js --config jest.unit.config.js --coverage --runInBand",
+    "package": "node scripts/create_clean_archive.js",
+    "archive": "node scripts/create_clean_archive.js",
+    "audit:archive": "node scripts/create_clean_archive.js",
+    "audit:catalog": "node scripts/clean_catalog.js",
+    "catalog:clean": "node scripts/clean_catalog.js --apply",
+    "audit:passwords": "node scripts/audit_passwords.js"
   },
   "keywords": [
     "music",
     "player",
     "express",
-    "jamendo",
+    "mongodb",
     "spa"
   ],
-  "author": "Antigravity",
+  "author": "Ashish Maurya",
   "license": "MIT",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "compression": "^1.8.2",
     "cors": "^2.8.5",
     "crypto-js": "^4.2.0",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "jsonwebtoken": "^9.0.2"
+    "express-rate-limit": "^8.7.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^9.9.5",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
   }
 }

@@ -1,4 +1,57 @@
+# Dependencies
 node_modules/
+
+# Environment and Secrets
 .env
+.env.*
+!.env.example
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+
+# System & OS
 .DS_Store
+Thumbs.db
+
+# Logs and Debug
 *.log
+npm-debug.log*
+
+# Test and Coverage
+coverage/
+.nyc_output/
+
+# Archives and Shared Bundles
+*.zip
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+
+# IDE and Editor Directories
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Build and Temp Directories
+dist/
+build/
+scratch/
+.cache/
+.gemini/
+.system_generated/
+.agents/
+
+# Local Database Files
+*.sqlite
+*.sqlite3
+*.db
+
+# Data backups and reports
+data/*.backup.json
+data/*_report.json
+
+

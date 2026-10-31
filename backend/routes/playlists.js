@@ -1,157 +1,195 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const router = express.Router();
 const authMiddleware = require('../middleware/auth');
-const { readData, writeData } = require('../services/db');
-
-function generateId() {
-  return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
-}
+const validate = require('../middleware/validate');
+const {
+  createPlaylistSchema,
+  renamePlaylistSchema,
+  playlistIdParamSchema,
+  addTrackSchema,
+  removeTrackParamSchema
+} = require('../validators/playlist');
+const Playlist = require('../models/Playlist');
 
 // All playlist routes require authentication
 router.use(authMiddleware);
 
 // GET /api/playlists - Get all playlists for current user
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
   try {
-    const playlists = await readData('playlists');
-    const userPlaylists = playlists.filter(p => p.userId === req.user.id);
+    if (!mongoose.Types.ObjectId.isValid(req.user.id)) {
+      return res.status(400).json({ error: 'Invalid resource ID.' });
+    }
+    const userPlaylists = await Playlist.find({ userId: req.user.id }).sort({ createdAt: -1 });
     res.json(userPlaylists);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch playlists.' });
+    next(error);
+  }
+});
+
+// GET /api/playlists/:id - Get single playlist by ID for current user
+router.get('/:id', validate(playlistIdParamSchema, 'params'), async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(req.user.id)) {
+      return res.status(400).json({ error: 'Invalid resource ID.' });
+    }
+
+    const playlist = await Playlist.findOne({ _id: id, userId: req.user.id });
+
+    if (!playlist) {
+      return res.status(404).json({ error: 'Playlist not found or unauthorized.' });
+    }
+
+    res.json(playlist);
+  } catch (error) {
+    next(error);
   }
 });
 
 // POST /api/playlists - Create new playlist
-router.post('/', async (req, res) => {
+router.post('/', validate(createPlaylistSchema, 'body'), async (req, res, next) => {
   try {
-    const { name } = req.body;
-    if (!name || !name.trim()) {
-      return res.status(400).json({ error: 'Playlist name is required.' });
+    if (!mongoose.Types.ObjectId.isValid(req.user.id)) {
+      return res.status(400).json({ error: 'Invalid resource ID.' });
     }
+    const { name } = req.body;
 
-    const playlists = await readData('playlists');
-    const newPlaylist = {
-      id: generateId(),
+    const newPlaylist = await Playlist.create({
       userId: req.user.id,
       name: name.trim(),
-      tracks: [],
-      createdAt: new Date().toISOString()
-    };
-
-    playlists.push(newPlaylist);
-    await writeData('playlists', playlists);
+      tracks: []
+    });
 
     res.status(201).json(newPlaylist);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to create playlist.' });
+    next(error);
   }
 });
 
 // PUT /api/playlists/:id - Rename playlist
-router.put('/:id', async (req, res) => {
+router.put('/:id', validate(playlistIdParamSchema, 'params'), validate(renamePlaylistSchema, 'body'), async (req, res, next) => {
   try {
     const { id } = req.params;
     const { name } = req.body;
 
-    if (!name || !name.trim()) {
-      return res.status(400).json({ error: 'Playlist name is required.' });
+    if (!mongoose.Types.ObjectId.isValid(req.user.id)) {
+      return res.status(400).json({ error: 'Invalid resource ID.' });
     }
 
-    const playlists = await readData('playlists');
-    const index = playlists.findIndex(p => p.id === id && p.userId === req.user.id);
+    const playlist = await Playlist.findOneAndUpdate(
+      { _id: id, userId: req.user.id },
+      { name: name.trim() },
+      { returnDocument: 'after' }
+    );
 
-    if (index === -1) {
+    if (!playlist) {
       return res.status(404).json({ error: 'Playlist not found or unauthorized.' });
     }
 
-    playlists[index].name = name.trim();
-    playlists[index].updatedAt = new Date().toISOString();
-
-    await writeData('playlists', playlists);
-    res.json(playlists[index]);
+    res.json(playlist);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to update playlist.' });
+    next(error);
   }
 });
 
 // DELETE /api/playlists/:id - Delete playlist
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', validate(playlistIdParamSchema, 'params'), async (req, res, next) => {
   try {
     const { id } = req.params;
-    const playlists = await readData('playlists');
-    const filtered = playlists.filter(p => !(p.id === id && p.userId === req.user.id));
 
-    if (playlists.length === filtered.length) {
+    if (!mongoose.Types.ObjectId.isValid(req.user.id)) {
+      return res.status(400).json({ error: 'Invalid resource ID.' });
+    }
+
+    const playlist = await Playlist.findOneAndDelete({ _id: id, userId: req.user.id });
+
+    if (!playlist) {
       return res.status(404).json({ error: 'Playlist not found or unauthorized.' });
     }
 
-    await writeData('playlists', filtered);
     res.json({ message: 'Playlist deleted successfully.' });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to delete playlist.' });
+    next(error);
   }
 });
 
 // POST /api/playlists/:id/tracks - Add track to playlist
-router.post('/:id/tracks', async (req, res) => {
+router.post('/:id/tracks', validate(playlistIdParamSchema, 'params'), validate(addTrackSchema, 'body'), async (req, res, next) => {
   try {
     const { id } = req.params;
     const { jamendoId, title, artist, coverUrl, audioUrl, duration } = req.body;
 
-    if (!jamendoId || !title || !artist || !audioUrl) {
-      return res.status(400).json({ error: 'Missing track details (jamendoId, title, artist, audioUrl).' });
+    if (!mongoose.Types.ObjectId.isValid(req.user.id)) {
+      return res.status(400).json({ error: 'Invalid resource ID.' });
     }
 
-    const playlists = await readData('playlists');
-    const playlist = playlists.find(p => p.id === id && p.userId === req.user.id);
+    const trackStr = String(jamendoId);
 
-    if (!playlist) {
-      return res.status(404).json({ error: 'Playlist not found or unauthorized.' });
-    }
+    // Atomic concurrency protection: only push track if it does not already exist in playlist
+    const updated = await Playlist.findOneAndUpdate(
+      {
+        _id: id,
+        userId: req.user.id,
+        'tracks.jamendoId': { $ne: trackStr }
+      },
+      {
+        $push: {
+          tracks: {
+            jamendoId: trackStr,
+            title,
+            artist,
+            coverUrl: coverUrl || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&auto=format&fit=crop',
+            audioUrl,
+            duration: duration || 0,
+            addedAt: new Date()
+          }
+        }
+      },
+      { returnDocument: 'after' }
+    );
 
-    // Check if track is already in playlist
-    const trackExists = playlist.tracks.some(t => String(t.jamendoId) === String(jamendoId));
-    if (trackExists) {
+    if (!updated) {
+      // Differentiate between non-existent playlist (404) and duplicate track rejection (400)
+      const existing = await Playlist.findOne({ _id: id, userId: req.user.id });
+      if (!existing) {
+        return res.status(404).json({ error: 'Playlist not found or unauthorized.' });
+      }
       return res.status(400).json({ error: 'Track is already in this playlist.' });
     }
 
-    const newTrack = {
-      jamendoId: String(jamendoId),
-      title,
-      artist,
-      coverUrl: coverUrl || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&auto=format&fit=crop',
-      audioUrl,
-      duration: duration || 0,
-      addedAt: new Date().toISOString()
-    };
-
-    playlist.tracks.push(newTrack);
-    await writeData('playlists', playlists);
-
-    res.status(201).json(playlist);
+    res.status(201).json(updated);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to add track to playlist.' });
+    next(error);
   }
 });
 
 // DELETE /api/playlists/:id/tracks/:jamendoId - Remove track from playlist
-router.delete('/:id/tracks/:jamendoId', async (req, res) => {
+router.delete('/:id/tracks/:jamendoId', validate(removeTrackParamSchema, 'params'), async (req, res, next) => {
   try {
     const { id, jamendoId } = req.params;
-    const playlists = await readData('playlists');
-    const playlist = playlists.find(p => p.id === id && p.userId === req.user.id);
 
-    if (!playlist) {
+    if (!mongoose.Types.ObjectId.isValid(req.user.id)) {
+      return res.status(400).json({ error: 'Invalid resource ID.' });
+    }
+
+    const updated = await Playlist.findOneAndUpdate(
+      { _id: id, userId: req.user.id },
+      { $pull: { tracks: { jamendoId: String(jamendoId) } } },
+      { returnDocument: 'after' }
+    );
+
+    if (!updated) {
       return res.status(404).json({ error: 'Playlist not found or unauthorized.' });
     }
 
-    playlist.tracks = playlist.tracks.filter(t => String(t.jamendoId) !== String(jamendoId));
-    await writeData('playlists', playlists);
-
-    res.json(playlist);
+    res.json(updated);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to remove track from playlist.' });
+    next(error);
   }
 });
 
 module.exports = router;
+
