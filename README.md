@@ -6,42 +6,42 @@ A responsive music streaming web application built with a Node.js/Express backen
 
 ## 🌟 Key Features
 
-### 🎧 Audio Playback & Studio DSP Engine
-- **Web Audio API Equalizer**: 3-band studio parametric EQ (Bass, Mid, Treble) with real-time gain control (-12 dB to +12 dB).
-- **Dynamics Processing**: Built-in anti-clipping dynamics compressor and loudness limiter to prevent distortion and normalize volume.
-- **HD Audio Streaming**: Automatic resolution and upgrade to 320 kbps HD streams with seamless fallback to standard bitrates.
-- **Audio Presets**: Pre-tuned sound profiles (Studio HD, Deep Bass, Vocal Clarity, Dynamic Club, Flat/Bypass).
-- **Cross-Origin DSP Safety**: Dynamic CORS detection that applies Web Audio DSP when permitted and falls back cleanly for restricted third-party audio streams.
-- **Continue Listening**: Persistent playback state preserving track progress, volume, and playback queue across browser sessions.
+### 🎧 Audio Playback & Equalizer
+- 3-Band Equalizer: Bass, Mid and Treble controls.
+- Audio Enhancement: Built-in dynamics compressor and loudness limiter.
+- HD Streaming: Supports up to 320 kbps streaming with fallback.
+- Audio Presets: Studio HD, Deep Bass, Vocal Clarity, Dynamic Club and Flat.
+- Playback Continuity: Remembers playback progress, volume and queue across browser sessions.
 
-### 🔍 Search & Discovery Engine
-- **Intent-Based Music Search**: Algorithmic classification and query parsing for moods (*Romantic, Sad, Party, Workout, Relaxing, Devotional*) and eras (*90s Bollywood, Retro*).
-- **Typo-Tolerant Ranking**: Deterministic relevance hierarchy powered by Damerau-Levenshtein edit distance and token similarity without heavy cloud AI dependencies.
-- **Bilingual Normalization**: Full Unicode-aware text processing supporting Romanized Hindi and native Devanagari script queries.
-- **Multi-Provider Architecture**:
-  - **Local Catalog**: 3,731 pre-indexed Hindi and Bollywood tracks.
-  - **JioSaavn**: Decryption and stream formatting for Indian and international catalog tracks.
-  - **Audius**: Decentralized stream discovery with automatic mirror failover and host rotation.
-  - **Jamendo**: CC-licensed independent tracks with permission and download checks.
-  - **Radio Browser**: Global live radio station streaming with secure proxy support.
+### 🔍 Search & Discovery
+
+- **Intent-Based Search:** Search songs by mood (Romantic, Sad, Party, Workout, Relaxing, Devotional) and era (90s Bollywood, Retro).
+- **Typo-Tolerant Search:** Finds relevant songs even when search queries contain spelling mistakes.
+- **Bilingual Search:** Supports Romanized Hindi and Devanagari text.
+- **Multi-Provider Music Streaming:**
+  - **Local Catalog:** 3,000+ pre-indexed Hindi and Bollywood tracks.
+  - **JioSaavn:** Music search, artist discovery and stream URL handling.
+  - **Audius:** Decentralized music streaming with provider failover.
+  - **Jamendo:** Independent music discovery and streaming.
+  - **Radio Browser:** Live radio station discovery and streaming.
 
 ### 👤 User Library & Personalization
-- **Authentication**: Dual-mode JSON Web Token (JWT) system supporting both `HttpOnly`, `SameSite=Lax` cookies and `Bearer` authorization headers with bcrypt password hashing (work factor 10).
-- **Playlists Management**: Create, rename, delete, and manage custom playlists with complete horizontal authorization and atomic duplicate protection.
-- **Favorites & Likes**: Single-click track liking across all views (search, catalog, recent history) backed by MongoDB compound indexes for fast sorted reads.
-- **Listening History & Anti-Tampering Telemetry**: Server-issued playback sessions (`sessionId`) with server-side elapsed-time pacing and duration bounding to prevent forged qualified plays.
-- **Listening Insights Dashboard**: Real-time listening statistics, top played tracks, top artists, and monthly listening minutes computed via MongoDB aggregation pipelines.
-- **Synchronized Lyrics**: Built-in LRC parser supporting timestamp-synchronized scrolling lyrics with fallback to formatted typography.
-- **Accessibility & Shortcuts**: Global keyboard controls (`Space` to toggle play, `ArrowLeft`/`ArrowRight` to seek, `/` to search, `M` to mute, `N`/`P` for track skipping, `?` for help modal, `Esc` to close overlays).
 
-### ⚡ Performance & Production Readiness
-- **Response Compression**: Gzip and Deflate compression for static assets and JSON responses, with dedicated bypass filters for binary audio streams.
-- **Memory Memoization**: In-memory pre-indexing and memoized views for albums, artists, and mood collections with automatic cache invalidation on catalog reload.
-- **Fine-Grained Static Caching**: Immediate revalidation (`no-cache, must-revalidate`) for HTML shells alongside long-lived caching for immutable static assets.
-- **Health Probes**: Independent `/health/live` (liveness) and `/health/ready` (readiness with MongoDB status) probes for Docker, Kubernetes, Render, and Railway deployments.
-- **Graceful Shutdown**: Intercepts `SIGTERM` and `SIGINT` to cleanly drain active HTTP connections and close database connections within a 10-second deadline.
+- **User Authentication:** Secure login and registration using JWT authentication and bcrypt password hashing.
+- **Playlist Management:** Create, rename, delete and organize personal playlists.
+- **Favorites & Likes:** Like and manage favorite songs from search results, catalog and listening history.
+- **Listening History:** Automatically tracks listening activity with server-side playback session validation.
+- **Listening Insights:** View listening statistics, most-played tracks, top artists and monthly listening time.
+- **Synchronized Lyrics:** Displays timestamp-based lyrics synchronized with music playback.
+- **Keyboard Shortcuts:** Control playback, seek tracks, mute audio, skip songs, open search and close overlays using keyboard shortcuts.
 
----
+### ⚡ Performance & Reliability
+
+- **Response Compression:** Uses Gzip and Deflate to reduce response sizes while keeping audio streams unaffected.
+- **Caching & Optimization:** Uses in-memory caching and pre-indexing to improve song, album and artist loading speed.
+- **Static Asset Caching:** Optimized caching for HTML pages and static files.
+- **Health Monitoring:** Separate health endpoints to check server status and MongoDB connectivity.
+- **Graceful Shutdown:** Safely closes server connections and database connections during shutdown.
 
 ## 🏗️ Architecture & Tech Stack
 
@@ -162,16 +162,13 @@ npm run test:coverage
 
 ---
 
-## 🔒 Security Architecture
+## 🔒 Security
 
-- **Credential Redaction**: MongoDB connection strings and error logs are automatically scrubbed to redact embedded passwords and usernames.
-- **SSRF Protection**: Image and favicon proxies strictly reject internal hostnames, loopback addresses (`127.0.0.1`, `localhost`), and cloud metadata endpoints (`169.254.169.254`).
-- **Input Validation**: All HTTP route parameters, query strings, and request bodies are validated using strict Zod schemas with type-coercion guards.
-- **HTTP Security Headers**: Express responses include `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `X-XSS-Protection: 1; mode=block`, and a restrictive `Content-Security-Policy`.
-- **Rate Limiting**: Authentication endpoints (`/api/auth/login`, `/api/auth/register`) are protected by IP-based rate limiting to prevent brute-force attacks.
-
----
-
+- **Credential Protection:** Sensitive information such as database credentials is redacted from error logs.
+- **SSRF Protection:** Image and favicon proxies block requests to internal and restricted network addresses.
+- **Input Validation:** Validates API inputs to help prevent invalid or unsafe requests.
+- **HTTP Security Headers:** Uses security headers and Content Security Policy (CSP) to improve browser-side protection.
+- **Rate Limiting:** Protects login and registration endpoints against excessive requests and brute-force attempts.
 ## 📄 License
 
 This project is licensed under the [MIT License](LICENSE).
